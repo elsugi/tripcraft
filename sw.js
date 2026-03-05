@@ -31,9 +31,7 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-
-
-// Fetch: cache-first for tiles, network-first for everything else
+// Fetch strategy
 self.addEventListener('fetch', event => {
   const url = event.request.url;
 
@@ -53,8 +51,21 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // App shell & static assets – cache first
-  if (url.includes('/index.html') || url.includes('/manifest.json') || url.includes('unpkg.com') || url.includes('fonts.googleapis')) {
+  // index.html – network-first so updates deploy immediately,
+  // falls back to cache when offline
+  if (url.includes('/index.html') || url.endsWith('/')) {
+    event.respondWith(
+      fetch(event.request).then(response => {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+        return response;
+      }).catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Other static assets (manifest, fonts, leaflet) – cache-first
+  if (url.includes('/manifest.json') || url.includes('unpkg.com') || url.includes('fonts.googleapis')) {
     event.respondWith(
       caches.match(event.request).then(cached =>
         cached || fetch(event.request).then(response => {
