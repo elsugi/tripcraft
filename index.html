@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#FF6B6B" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="TripCraft" />
-    <title>TripCraft</title>
+    <title>TripCraft 2.0</title>
     <link rel="manifest" href="./manifest.json" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
@@ -464,13 +464,12 @@
         flex-shrink: 0;
       }
       .trip-hero {
-        height: 240px;
         position: relative;
         overflow: hidden;
         display: flex;
         align-items: flex-end;
-        padding: 20px;
-        background: linear-gradient(135deg, #ff6b6b, #ffb347);
+        padding: 56px 24px 32px;
+        background: linear-gradient(135deg, var(--coral) 0%, var(--amber) 100%);
       }
       .trip-hero-emoji {
         font-size: 100px;
@@ -483,6 +482,7 @@
       .trip-hero-info {
         position: relative;
         z-index: 1;
+        padding-left: 52px;
       }
       .trip-hero-name {
         font-family: "Fraunces", serif;
@@ -1167,9 +1167,9 @@
             letter-spacing: 1px;
           "
         >
-          
+          v2.0
         </div>
-        <div class="hdr-sub">Plan, pack, and go</div>
+        <div class="hdr-sub">Plan, pack, and go — even offline</div>
       </div>
       <button class="install-banner" id="install-banner" style="display: none">
         <div style="font-size: 28px">📲</div>
