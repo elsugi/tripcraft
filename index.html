@@ -1328,6 +1328,9 @@
         <div id="places-list"></div>
       </div>
       <div class="trip-section" id="tab-packing">
+        <div style="display:flex;justify-content:flex-end;padding:0 0 10px">
+          <button id="btn-open-pack-templates" style="background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink)">📋 Templates</button>
+        </div>
         <div class="add-item-row">
           <input
             class="add-item-input"
@@ -2174,7 +2177,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-      const KEY = "tripcraft_v2";
+      const KEY = "tripcraft_v3";
       const PACK_CATS = [
         "Clothing",
         "Toiletries",
@@ -2210,99 +2213,7 @@
 
       function seed() {
         return {
-          trips: [
-            {
-              id: 1,
-              name: "Japan Spring '25",
-              emoji: "🌸",
-              start: "2026-05-04",
-              end: "2026-05-18",
-              upcoming: true,
-              flights: [
-                {
-                  from: "YVR",
-                  to: "NRT",
-                  date: "2025-04-02",
-                  num: "AC61",
-                  dep: "11:30",
-                  arr: "14:20+1",
-                  conf: "ACXR72",
-                },
-                {
-                  from: "NRT",
-                  to: "YVR",
-                  date: "2025-04-16",
-                  num: "AC62",
-                  dep: "16:00",
-                  arr: "10:30",
-                  conf: "ACXR73",
-                },
-              ],
-              hotels: [
-                {
-                  name: "Shinjuku Granbell Hotel",
-                  checkin: "2025-04-02",
-                  checkout: "2025-04-07",
-                  conf: "HTL-998234",
-                  addr: "2-14-5 Kabukicho, Shinjuku, Tokyo",
-                },
-                {
-                  name: "Dormy Inn Kyoto",
-                  checkin: "2025-04-07",
-                  checkout: "2025-04-12",
-                  conf: "HTL-112244",
-                  addr: "Higashinotoin Nishiiru, Kyoto",
-                },
-              ],
-              places: [
-                {
-                  name: "Senso-ji Temple",
-                  area: "Asakusa, Tokyo",
-                  cat: "🏛️ Sights",
-                  note: "Go early morning",
-                  rating: 4.8,
-                },
-                {
-                  name: "Ichiran Ramen",
-                  area: "Shibuya, Tokyo",
-                  cat: "🍽️ Food",
-                  note: "Solo ramen booths!",
-                  rating: 4.6,
-                },
-                {
-                  name: "Fushimi Inari Shrine",
-                  area: "Fushimi, Kyoto",
-                  cat: "🏛️ Sights",
-                  note: "Hike to the top",
-                  rating: 4.9,
-                },
-                {
-                  name: "Nishiki Market",
-                  area: "Nishiki, Kyoto",
-                  cat: "🍽️ Food",
-                  note: "Kyoto's kitchen",
-                  rating: 4.5,
-                },
-              ],
-              packing: [
-                {
-                  cat: "Clothing",
-                  items: ["T-shirts x5", "Jeans", "Rain jacket"],
-                },
-                { cat: "Toiletries", items: ["Toothbrush", "Sunscreen"] },
-                {
-                  cat: "Travel Documents",
-                  items: ["Passport", "Flight printouts"],
-                },
-                {
-                  cat: "Electronics",
-                  items: ["Phone charger", "Power adapter"],
-                },
-                { cat: "Miscellaneous", items: ["Yen cash", "Snacks"] },
-              ],
-              itinerary: [],
-            },
-          ],
+          trips: [],
           checked: {},
         };
       }
@@ -2718,7 +2629,7 @@
         closeModals();
         toast("Template saved! 📋");
       });
-      $("btn-open-pack-templates").addEventListener("click", () => {
+      if($("btn-open-pack-templates")) $("btn-open-pack-templates").addEventListener("click", () => {
         act("ptmpl-tab-use", "ptmpl-tab-save");
         $("ptmpl-use-panel").style.display = "block";
         $("ptmpl-save-panel").style.display = "none";
