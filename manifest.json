@@ -2,7 +2,7 @@
   "name": "TripCraft – Travel Planner",
   "short_name": "TripCraft",
   "description": "Your offline-first trip planner",
-  "start_url": "./index.html",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#F7F4EF",
   "theme_color": "#FF6B6B",
