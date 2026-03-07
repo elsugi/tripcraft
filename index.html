@@ -285,12 +285,47 @@
         font-family: "Fraunces", serif;
         font-size: 20px;
       }
+      .trips-carousel {
+        position: relative;
+      }
+      .trips-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--card);
+        border: 1.5px solid var(--border);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--ink);
+        font-size: 14px;
+        transition: opacity 0.2s;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .trips-arrow:hover {
+        background: var(--surface);
+      }
+      .trips-arrow.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .trips-arrow-left { left: 4px; }
+      .trips-arrow-right { right: 4px; }
       .trips-scroll {
         display: flex;
         gap: 14px;
         overflow-x: auto;
         padding: 0 20px 8px;
         scrollbar-width: none;
+        width: 100%;
+        box-sizing: border-box;
+        -webkit-overflow-scrolling: touch;
       }
       .trips-scroll::-webkit-scrollbar {
         display: none;
@@ -1255,7 +1290,11 @@
           </button>
         </div>
       </div>
-      <div class="trips-scroll" id="trips-list"></div>
+      <div class="trips-carousel">
+        <button class="trips-arrow trips-arrow-left hidden" id="trips-arrow-left">&#8249;</button>
+        <div class="trips-scroll" id="trips-list"></div>
+        <button class="trips-arrow trips-arrow-right hidden" id="trips-arrow-right">&#8250;</button>
+      </div>
       <div class="section-hdr" style="padding-top: 12px">
         <div class="section-title">Quick Add</div>
       </div>
@@ -1346,16 +1385,14 @@
       </div>
       <div class="trip-section" id="tab-places">
         <div style="display:flex;gap:8px;margin-bottom:0">
-          <button class="add-btn" id="btn-add-place" style="flex:1">+ Save a Place</button>
+          <button class="add-btn" id="btn-add-place" style="flex:1">+ Add a Place</button>
           <button class="add-btn" id="btn-sheets-import" style="flex:1;background:var(--surface);color:var(--ink);border:1.5px solid var(--border)">📋 Import from Sheets</button>
         </div>
         <div id="map-trip"></div>
         <div id="places-list"></div>
       </div>
       <div class="trip-section" id="tab-packing">
-        <div style="display:flex;justify-content:flex-end;padding:0 0 10px">
-          <button id="btn-open-pack-templates" style="background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink)">📋 Templates</button>
-        </div>
+        <button class="add-btn" id="btn-open-pack-templates" style="background:var(--surface);color:var(--ink);border:1.5px solid var(--border);margin-bottom:10px">📋 Templates</button>
         <div class="add-item-row">
           <input
             class="add-item-input"
@@ -1384,7 +1421,7 @@
       </div>
       <div style="padding: 16px">
         <button class="add-btn" id="btn-add-place-global">
-          + Save a Place
+          + Add a Place
         </button>
         <div id="map-global"></div>
         <div id="all-places-list"></div>
@@ -1475,50 +1512,6 @@
       </button>
     </nav>
 
-    <!-- MODAL: QR Share -->
-    <div class="overlay" id="modal-qr">
-      <div class="modal" style="text-align: center">
-        <div class="modal-handle"></div>
-        <div class="modal-title">Share via QR 📲</div>
-        <p style="font-size: 13px; color: var(--muted); margin: 0 0 16px">
-          Scan with another device to import this trip
-        </p>
-        <div
-          id="qr-canvas-wrap"
-          style="display: flex; justify-content: center; margin-bottom: 16px"
-        >
-          <canvas
-            id="qr-canvas"
-            style="border-radius: 12px; image-rendering: pixelated"
-          ></canvas>
-        </div>
-        <div
-          id="qr-too-large"
-          style="
-            display: none;
-            background: #fff8e1;
-            border: 1.5px solid var(--amber);
-            border-radius: var(--rs);
-            padding: 12px;
-            font-size: 13px;
-            margin-bottom: 12px;
-          "
-        >
-          ⚠️ Trip data is too large for a QR code. Use Export File instead.
-        </div>
-        <button
-          class="btn-primary"
-          style="
-            background: transparent;
-            color: var(--muted);
-            border: 1.5px solid var(--border);
-          "
-          id="btn-close-qr"
-        >
-          Close
-        </button>
-      </div>
-    </div>
 
     <!-- MODAL: Packing Templates -->
     <div class="overlay" id="modal-pack-templates">
@@ -1940,7 +1933,7 @@
     <div class="overlay" id="modal-place">
       <div class="modal">
         <div class="modal-handle"></div>
-        <div class="modal-title">Save a Place 📌</div>
+        <div class="modal-title">Add a Place 📌</div>
         <div class="ftabs">
           <button class="ftab active" id="ptab-manual">Manual</button>
           <button class="ftab" id="ptab-gmaps">Google Maps</button>
@@ -2059,13 +2052,7 @@
         >
           📁 Export Trip File
         </button>
-        <button
-          class="btn-primary"
-          style="background: var(--ink); margin-bottom: 10px"
-          id="share-qr-btn"
-        >
-          📲 Share via QR
-        </button>
+
         <label for="file-import-input2" class="btn-primary" style="background:var(--sky);margin-bottom:0;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer">📂 Import Trip File</label>
       </div>
     </div>
@@ -2325,230 +2312,6 @@
       });
 
       // ── HOME ──
-      // ── MINIMAL QR ENCODER ──
-      // Reed-Solomon + QR matrix generation (subset: version 1-10, byte mode, ECC level M)
-      const QR = (() => {
-        const GF = new Uint8Array(512);
-        const LOG = new Uint8Array(256);
-        let x = 1;
-        for (let i = 0; i < 255; i++) {
-          GF[i] = x;
-          LOG[x] = i;
-          x <<= 1;
-          if (x & 256) x ^= 285;
-        }
-        for (let i = 255; i < 512; i++) GF[i] = GF[i - 255];
-        const gmul = (a, b) => (a && b ? GF[LOG[a] + LOG[b]] : 0);
-        const poly = (n) => {
-          let p = [1];
-          for (let i = 0; i < n; i++) {
-            const q = new Uint8Array(p.length + 1);
-            for (let j = 0; j < p.length; j++) {
-              q[j] ^= gmul(p[j], 1);
-              q[j + 1] ^= gmul(p[j], GF[i]);
-            }
-            p = q;
-          }
-          return p;
-        };
-        const ecBytes = (data, n) => {
-          const gen = poly(n);
-          const msg = new Uint8Array(data.length + n);
-          msg.set(data);
-          for (let i = 0; i < data.length; i++)
-            for (let j = 0; j < gen.length; j++)
-              msg[i + j] ^= gmul(msg[i], gen[j]);
-          return msg.slice(data.length);
-        };
-        // Version capacity (byte mode, ECC M): [ver] = max bytes
-        const CAP = [
-          0, 14, 26, 42, 62, 84, 106, 122, 154, 180, 206, 244, 261, 295, 325,
-        ];
-        const BLOCKS = [
-          [0, 0],
-          [1, 19],
-          [1, 34],
-          [2, 22],
-          [2, 33],
-          [2, 27],
-          [4, 21],
-          [4, 25],
-          [2, 30, 2, 27],
-          [3, 30, 2, 28],
-          [4, 30, 4, 25],
-          [1, 28, 4, 28],
-          [6, 28, 2, 28],
-          [8, 26, 1, 26],
-          [4, 28, 5, 28],
-        ];
-        function getVer(len) {
-          for (let v = 1; v <= 14; v++) if (CAP[v] >= len) return v;
-          return -1;
-        }
-        function encode(str) {
-          const bytes = new TextEncoder().encode(str);
-          const ver = getVer(bytes.length);
-          if (ver < 0) return null;
-          const bl = BLOCKS[ver];
-          // Build data codewords
-          const total = (CAP[ver] + Math.ceil(CAP[ver] * 0.2)) | 0; // rough
-          let bits = [];
-          const push = (v, n) => {
-            for (let i = n - 1; i >= 0; i--) bits.push((v >> i) & 1);
-          };
-          push(4, 4);
-          push(bytes.length, 8 * (ver < 10 ? 1 : 2));
-          for (const b of bytes) push(b, 8);
-          push(0, 4);
-          while (bits.length % 8) bits.push(0);
-          const cw = new Uint8Array(bits.length / 8);
-          for (let i = 0; i < cw.length; i++)
-            cw[i] =
-              (bits[i * 8] << 7) |
-              (bits[i * 8 + 1] << 6) |
-              (bits[i * 8 + 2] << 5) |
-              (bits[i * 8 + 3] << 4) |
-              (bits[i * 8 + 4] << 3) |
-              (bits[i * 8 + 5] << 2) |
-              (bits[i * 8 + 6] << 1) |
-              bits[i * 8 + 7];
-          // Pad
-          const cap = bl[0] * bl[1] + (bl.length > 2 ? bl[2] * bl[3] : 0);
-          const pad = [236, 17];
-          let pi = 0;
-          const all = new Uint8Array(cap);
-          all.set(cw.slice(0, Math.min(cw.length, cap)));
-          for (let i = cw.length; i < cap; i++) all[i] = pad[pi++ % 2];
-          // EC
-          const ecLen = Math.round(cap * 0.25);
-          const ec = ecBytes(all, ecLen);
-          const full = new Uint8Array(cap + ecLen);
-          full.set(all);
-          full.set(ec, cap);
-          // Build matrix
-          const size = 17 + 4 * ver;
-          const mat = Array.from({ length: size }, () =>
-            new Int8Array(size).fill(-1),
-          );
-          const res = Array.from({ length: size }, () => new Uint8Array(size));
-          function setM(r, c, v) {
-            mat[r][c] = v;
-            res[r][c] = 1;
-          }
-          // Finder patterns
-          const finder = (r, c) => {
-            for (let i = 0; i < 7; i++) {
-              for (let j = 0; j < 7; j++) {
-                const b =
-                  i === 0 ||
-                  i === 6 ||
-                  j === 0 ||
-                  j === 6 ||
-                  (i >= 2 && i <= 4 && j >= 2 && j <= 4)
-                    ? 1
-                    : 0;
-                if (r + i < size && c + j < size) setM(r + i, c + j, b);
-              }
-            }
-          };
-          finder(0, 0);
-          finder(0, size - 7);
-          finder(size - 7, 0);
-          // Separators
-          for (let i = 0; i < 8; i++) {
-            [0, 1, 2, 3, 4, 5, 6, 7].forEach((j) => {
-              if (i < size && j < size && !res[i][j]) setM(i, j, 0);
-              if (i < size && j < size && !res[j][i]) setM(j, i, 0);
-            });
-          }
-          if (size > 7) {
-            for (let i = 0; i < 8; i++) {
-              setM(i, size - 8, 0);
-              setM(size - 8, i, 0);
-              setM(size - 1 - i, size - 8, 0);
-              setM(size - 8, size - 1 - i, 0);
-            }
-          }
-          // Timing
-          for (let i = 8; i < size - 8; i++) {
-            setM(6, i, i % 2 === 0 ? 1 : 0);
-            setM(i, 6, i % 2 === 0 ? 1 : 0);
-          }
-          // Dark module
-          setM(4 * ver + 9, 8, 1);
-          // Format area reservation
-          for (let i = 0; i < 9; i++) {
-            if (!res[8][i]) setM(8, i, 0);
-            if (!res[i][8]) setM(i, 8, 0);
-          }
-          for (let i = 0; i < 8; i++) {
-            setM(8, size - 8 + i, 0);
-            setM(size - 8 + i, 8, 0);
-          }
-          // Data placement
-          let bi = 0;
-          let up = true;
-          for (let col = size - 1; col >= 0; col -= 2) {
-            if (col === 6) col--;
-            for (let row2 = 0; row2 < size; row2++) {
-              const row = up ? size - 1 - row2 : row2;
-              for (let c2 = 0; c2 < 2; c2++) {
-                const c = col - c2;
-                if (c < 0 || res[row][c]) continue;
-                const byteI = Math.floor(bi / 8),
-                  bitI = 7 - (bi % 8);
-                mat[row][c] =
-                  bi < full.length * 8 ? (full[byteI] >> bitI) & 1 : 0;
-                bi++;
-              }
-            }
-            up = !up;
-          }
-          // Masking (pattern 0: (r+c)%2==0)
-          const MASK = 0;
-          const fmt = 0b101010000010010 ^ (MASK << 10); // format string (simplified)
-          for (let i = 0; i < size; i++)
-            for (let j = 0; j < size; j++) {
-              if (!res[i][j] && (i + j) % 2 === 0) mat[i][j] ^= 1;
-            }
-          return { mat, size };
-        }
-        function draw(str, canvas, px = 6) {
-          const r = encode(str);
-          if (!r) {
-            return false;
-          }
-          const { mat, size } = r;
-          const dim = (size + 8) * px;
-          canvas.width = dim;
-          canvas.height = dim;
-          const ctx = canvas.getContext("2d");
-          ctx.fillStyle = "#fff";
-          ctx.fillRect(0, 0, dim, dim);
-          ctx.fillStyle = "#000";
-          for (let i = 0; i < size; i++)
-            for (let j = 0; j < size; j++) {
-              if (mat[i][j] === 1)
-                ctx.fillRect((j + 4) * px, (i + 4) * px, px, px);
-            }
-          return true;
-        }
-        return { draw };
-      })();
-
-      // ── QR SHARE ──
-      $("share-qr-btn").addEventListener("click", () => {
-        const t = D.trips[curTrip];
-        if (!t) return;
-        const json = JSON.stringify(t);
-        const canvas = $("qr-canvas");
-        const ok = QR.draw(json, canvas, 5);
-        $("qr-too-large").style.display = ok ? "none" : "block";
-        $("qr-canvas-wrap").style.display = ok ? "flex" : "none";
-        closeModals();
-        openModal("modal-qr");
-      });
-      $("btn-close-qr").addEventListener("click", closeModals);
 
       // ── PACKING TEMPLATES ──
       function getTemplates() {
@@ -2813,6 +2576,7 @@
           '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>New Trip';
         add.addEventListener("click", () => openModal("modal-newtrip"));
         list.appendChild(add);
+        setTimeout(() => { if (window._updateTripArrows) window._updateTripArrows(); }, 0);
       }
 
       function openTrip(idx) {
@@ -4773,6 +4537,25 @@
           toast("Open a trip first!");
         }
       });
+      // ── TRIPS CAROUSEL ──
+      (function() {
+        const scroll = $("trips-list");
+        const arrowL = $("trips-arrow-left");
+        const arrowR = $("trips-arrow-right");
+        function updateArrows() {
+          if (!scroll) return;
+          const canScroll = scroll.scrollWidth > scroll.clientWidth + 4;
+          const atStart = scroll.scrollLeft <= 8;
+          const atEnd = scroll.scrollLeft + scroll.clientWidth >= scroll.scrollWidth - 8;
+          arrowL.classList.toggle("hidden", !canScroll || atStart);
+          arrowR.classList.toggle("hidden", !canScroll || atEnd);
+        }
+        arrowL.addEventListener("click", () => { scroll.scrollBy({ left: -200, behavior: "smooth" }); });
+        arrowR.addEventListener("click", () => { scroll.scrollBy({ left: 200, behavior: "smooth" }); });
+        scroll.addEventListener("scroll", updateArrows, { passive: true });
+        window._updateTripArrows = updateArrows;
+      })();
+
       $("btn-newtrip").addEventListener("click", () =>
         openModal("modal-newtrip"),
       );
@@ -5250,6 +5033,8 @@
         navigator.serviceWorker.register("sw.js").catch(() => {});
 
       renderHome();
+      // Update carousel arrows after initial render
+      setTimeout(() => { if (window._updateTripArrows) window._updateTripArrows(); }, 50);
     </script>
   </body>
 </html>
