@@ -320,8 +320,8 @@
         position: absolute;
         inset: 0;
         background: linear-gradient(
-          to top,
-          rgba(26, 26, 46, 0.85) 40%,
+          to side,
+          rgba(98, 161, 164, 0.85) 10%,
           transparent
         );
         padding: 16px;
@@ -331,7 +331,7 @@
       }
       .trip-card-name {
         font-family: "Fraunces", serif;
-        font-size: 18px;
+        font-size: 20px;
         color: white;
       }
       .trip-card-date {
@@ -703,6 +703,21 @@
         font-weight: 600;
         color: var(--muted);
       }
+      .tl-drop-zone {
+        min-height: 8px;
+        border-radius: var(--rs);
+        transition: background 0.15s, border 0.15s;
+      }
+      .tl-drop-zone.drop-ready {
+        min-height: 48px;
+        border: 2px dashed var(--border);
+        background: rgba(78,205,196,0.04);
+        margin-bottom: 4px;
+      }
+      .tl-drop-zone.drop-over {
+        border: 2px dashed var(--sky);
+        background: rgba(78,205,196,0.12);
+      }
       .pack-drop-zone {
         min-height: 48px;
         border-radius: var(--rs);
@@ -845,6 +860,11 @@
         margin-bottom: 8px;
         overflow: hidden;
         touch-action: pan-y;
+      }
+      .swipe-row .timeline-item {
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
       }
       .swipe-del-bg {
         position: absolute;
@@ -1167,7 +1187,6 @@
             letter-spacing: 1px;
           "
         >
-          v2.0
         </div>
         <div class="hdr-sub">Plan, pack, and go — even offline</div>
       </div>
@@ -1246,7 +1265,7 @@
           Add Flight
         </button>
         <button class="qb" id="qb-hotel">
-          <div class="qb-icon" style="background: #e8f4ff">🏨</div>
+          <div class="qb-icon" style="background: #e8f4ff">🛏️</div>
           Add Hotel
         </button>
         <button class="qb" id="qb-pack">
@@ -1254,7 +1273,7 @@
           Packing
         </button>
         <button class="qb" id="qb-places">
-          <div class="qb-icon" style="background: #fff8e1">📍</div>
+          <div class="qb-icon" style="background: #fff8e1">📌</div>
           Places
         </button>
       </div>
@@ -1320,10 +1339,16 @@
         <div id="hotels-list"></div>
       </div>
       <div class="trip-section" id="tab-timeline">
+        <div style="display:flex;gap:8px;margin-bottom:0">
+          <button class="add-btn" id="btn-timeline-import" style="background:var(--surface);color:var(--ink);border:1.5px solid var(--border)">📋 Import from Sheets</button>
+        </div>
         <div id="timeline-list"></div>
       </div>
       <div class="trip-section" id="tab-places">
-        <button class="add-btn" id="btn-add-place">+ Save a Place</button>
+        <div style="display:flex;gap:8px;margin-bottom:0">
+          <button class="add-btn" id="btn-add-place" style="flex:1">+ Save a Place</button>
+          <button class="add-btn" id="btn-sheets-import" style="flex:1;background:var(--surface);color:var(--ink);border:1.5px solid var(--border)">📋 Import from Sheets</button>
+        </div>
         <div id="map-trip"></div>
         <div id="places-list"></div>
       </div>
@@ -1340,7 +1365,7 @@
           <select class="add-item-cat" id="trip-item-cat">
             <option value="Miscellaneous">📦 Misc</option>
             <option value="Clothing">👕 Clothing</option>
-            <option value="Toiletries">🧴 Toiletries</option>
+            <option value="Toiletries">🪥 Toiletries</option>
             <option value="Travel Documents">📄 Docs</option>
             <option value="Electronics">🔌 Tech</option>
           </select>
@@ -1401,7 +1426,7 @@
           <select class="add-item-cat" id="new-item-cat">
             <option value="Miscellaneous">📦 Misc</option>
             <option value="Clothing">👕 Clothing</option>
-            <option value="Toiletries">🧴 Toiletries</option>
+            <option value="Toiletries">🪥 Toiletries</option>
             <option value="Travel Documents">📄 Docs</option>
             <option value="Electronics">🔌 Tech</option>
           </select>
@@ -1426,74 +1451,26 @@
         <div class="nav-dot"></div>
       </button>
       <button class="nav-btn" id="nav-trip">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path
-            d="M21 10.5c.3-1.2-.5-2.5-1.7-2.8l-4.5-1.2-4-6-2.5.7 2 5.7-4-.9-1.3-2-1.9.5 1.5 4.8 1.5 4.8 1.9-.5-.3-2.3 4 .1 3.5 4.7 2.5-.7-2.2-6.4 4.5-1.2c1.2-.3 1.9-1.6 1.5-2.3z"
-          /></svg
-        >Flights
+        
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plane-icon lucide-plane"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+        
+        Flights
         <div class="nav-dot"></div>
       </button>
       <button class="nav-btn" id="nav-hotels">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M3 22V8l9-6 9 6v14" />
-          <path d="M9 22v-4h6v4" />
-          <rect x="9" y="10" width="2" height="2" />
-          <rect x="13" y="10" width="2" height="2" />
-          <rect x="9" y="14" width="2" height="2" />
-          <rect x="13" y="14" width="2" height="2" /></svg
-        >Hotels
+       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bed-double-icon lucide-bed-double"><path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8"/><path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M12 4v6"/><path d="M2 18h20"/></svg>Hotels
         <div class="nav-dot"></div>
       </button>
       <button class="nav-btn" id="nav-timeline">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <line x1="3" y1="6" x2="21" y2="6" />
-          <line x1="3" y1="12" x2="21" y2="12" />
-          <line x1="3" y1="18" x2="21" y2="18" />
-          <circle cx="7" cy="6" r="2" fill="currentColor" stroke="none" />
-          <circle cx="7" cy="12" r="2" fill="currentColor" stroke="none" />
-          <circle cx="7" cy="18" r="2" fill="currentColor" stroke="none" /></svg
-        >Timeline
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-route-icon lucide-route"><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>Itinerary
         <div class="nav-dot"></div>
       </button>
       <button class="nav-btn" id="nav-places">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-          <circle cx="12" cy="10" r="3" /></svg
-        >Places
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pinned-icon lucide-map-pinned"><path d="M18 8c0 3.613-3.869 7.429-5.393 8.795a1 1 0 0 1-1.214 0C9.87 15.429 6 11.613 6 8a6 6 0 0 1 12 0"/><circle cx="12" cy="8" r="2"/><path d="M8.714 14h-3.71a1 1 0 0 0-.948.683l-2.004 6A1 1 0 0 0 3 22h18a1 1 0 0 0 .948-1.316l-2-6a1 1 0 0 0-.949-.684h-3.712"/></svg>Places
         <div class="nav-dot"></div>
       </button>
       <button class="nav-btn" id="nav-pack">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <rect x="2" y="7" width="20" height="14" rx="2" />
-          <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
-          <line x1="12" y1="12" x2="12" y2="16" />
-          <line x1="10" y1="14" x2="14" y2="14" /></svg
-        >Pack
+       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-luggage-icon lucide-luggage"><path d="M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2"/><path d="M8 18V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14"/><path d="M10 20h4"/><circle cx="16" cy="20" r="2"/><circle cx="8" cy="20" r="2"/></svg>Packing
         <div class="nav-dot"></div>
       </button>
     </nav>
@@ -1549,8 +1526,8 @@
         <div class="modal-handle"></div>
         <div class="modal-title">Packing Templates 📋</div>
         <div class="ftabs">
-          <button class="ftab active" id="ptmpl-tab-use">Use Template</button>
-          <button class="ftab" id="ptmpl-tab-save">Save as Template</button>
+          <button class="ftab active" id="ptmpl-tab-use">🪄 Use Template</button>
+          <button class="ftab" id="ptmpl-tab-save">💾 Save as Template</button>
         </div>
         <div id="ptmpl-use-panel">
           <div
@@ -1592,7 +1569,87 @@
       </div>
     </div>
 
-    <!-- MODAL: Trip Picker -->
+    <!-- MODAL: Sheets Import -->
+<div class="overlay" id="modal-sheets-import">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Import from Sheets 📋</div>
+
+    <!-- Step 1: paste -->
+    <div id="sheets-step-paste">
+      <div id="sheets-tabs" class="ftabs" style="margin-bottom:12px;display:none">
+        <button class="ftab active" id="stab-locations">Location Tab</button>
+        <button class="ftab" id="stab-itinerary">Itinerary Tab</button>
+      </div>
+
+      <!-- Location tab mode -->
+      <div id="sheets-location-mode">
+        <p style="font-size:12px;color:var(--muted);margin:0 0 10px">Use this for your city tabs (Yokohama, Hakone, Kansai…) — each row becomes one place.</p>
+        <label class="flbl">Tab / Sheet Name <span style="color:var(--muted);font-weight:400">(becomes the Area)</span></label>
+        <input class="finput" id="sheets-tab-name" placeholder="e.g. Yokohama, Hakone, Kansai…" style="margin-bottom:12px"/>
+        <label class="flbl">Category for all items</label>
+        <select class="finput" id="sheets-cat" style="margin-bottom:12px">
+          <option>📌 Place</option>
+          <option>🍽️ Food</option>
+          <option>🏛️ Sightseeing</option>
+          <option>🛍️ Shopping</option>
+          <option>☕ Café</option>
+          <option>🎭 Culture</option>
+          <option>🛏️ Hotel</option>
+          <option>📸 Photog spot</option>
+          
+        </select>
+      </div>
+
+      <!-- Itinerary tab mode -->
+      <div id="sheets-itinerary-mode" style="display:none">
+        <p style="font-size:13px;color:var(--muted);margin:0 0 10px">Copies from your Itinerary tab. Each row becomes a place — col C/D as name, col E as area, col A+B as note.</p>
+      </div>
+
+      <label class="flbl">Paste copied cells from Google Sheets</label>
+      <textarea id="sheets-paste-area" rows="8" class="finput" placeholder="Select your cells in Google Sheets → Copy → Paste here" style="font-size:12px;font-family:monospace;resize:vertical"></textarea>
+      <button class="btn-primary" id="btn-parse-sheets" style="background:var(--ink);margin-bottom:8px">🔍 Parse</button>
+      <button class="btn-primary" id="btn-sheets-cancel1" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">Cancel</button>
+    </div>
+
+    <!-- Step 2: preview -->
+    <div id="sheets-step-preview" style="display:none">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="sheets-preview-count"></div>
+      <div id="sheets-preview-list" style="display:flex;flex-direction:column;gap:8px;max-height:40vh;overflow-y:auto;margin-bottom:16px"></div>
+      <!-- Timeline import: show override options -->
+      <div id="sheets-timeline-opts" style="display:none;background:var(--surface);border-radius:var(--rs);padding:12px;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:600;margin-bottom:8px">Existing itinerary found</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px">How do you want to import?</div>
+        <button class="btn-primary" id="btn-sheets-add" style="margin-bottom:8px">➕ Add to existing itinerary</button>
+        <button class="btn-primary" id="btn-sheets-replace" style="background:#E85555;margin-bottom:0">🔄 Replace entire itinerary</button>
+      </div>
+      <!-- Places import or empty itinerary: single confirm -->
+      <button class="btn-primary" id="btn-sheets-confirm" style="margin-bottom:8px">✅ Add All to Trip</button>
+      <button class="btn-primary" id="btn-sheets-back" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Edit Itinerary Entry -->
+<div class="overlay" id="modal-edit-itinerary">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Edit Entry 🗓️</div>
+    <label class="flbl">Move to Day</label>
+    <select class="finput" id="ei-move-day" style="margin-bottom:12px"></select>
+    <label class="flbl">Day Label</label>
+    <input class="finput" id="ei-day" placeholder="e.g. Sat Apr 6" style="margin-bottom:12px"/>
+    <label class="flbl">Location / City</label>
+    <input class="finput" id="ei-location" placeholder="e.g. Yokohama" style="margin-bottom:12px"/>
+    <label class="flbl">Notes</label>
+    <textarea class="finput" id="ei-note" rows="3" placeholder="Transit info, tips..." style="margin-bottom:16px;resize:vertical"></textarea>
+    <button class="btn-primary" id="btn-save-itinerary-edit" style="margin-bottom:8px">Save Changes</button>
+    <button class="btn-primary" id="btn-delete-itinerary-edit" style="background:#E85555;margin-bottom:8px">🗑️ Delete Entry</button>
+    <button class="btn-primary" id="btn-cancel-itinerary-edit" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">Cancel</button>
+  </div>
+</div>
+
+<!-- MODAL: Trip Picker -->
     <div class="overlay" id="modal-trip-picker">
       <div class="modal">
         <div class="modal-handle"></div>
@@ -1676,13 +1733,17 @@
         <label class="flbl">Pick an emoji</label>
         <div class="emoji-grid" id="emoji-picker">
           <button class="emoji-opt sel" data-e="✈️">✈️</button>
-          <button class="emoji-opt" data-e="🌍">🌍</button>
+                    <button class="emoji-opt" data-e="🌆">🌆</button>
           <button class="emoji-opt" data-e="🏖️">🏖️</button>
           <button class="emoji-opt" data-e="🏔️">🏔️</button>
-          <button class="emoji-opt" data-e="🌆">🌆</button>
-          <button class="emoji-opt" data-e="🏕️">🏕️</button>
-          <button class="emoji-opt" data-e="🚂">🚂</button>
+          <button class="emoji-opt" data-e="⛺">⛺</button>
+          <button class="emoji-opt" data-e="🌲">🌲</button>
+          <button class="emoji-opt" data-e="☀️">☀️</button>
+          <button class="emoji-opt" data-e="⛄">⛄</button>
+          <button class="emoji-opt" data-e="🌍">🌍</button>
           <button class="emoji-opt" data-e="🛳️">🛳️</button>
+
+          
         </div>
         <button class="btn-primary" id="btn-create-trip">Create Trip</button>
       </div>
@@ -1694,8 +1755,8 @@
         <div class="modal-handle"></div>
         <div class="modal-title">Add Flight ✈️</div>
         <div class="ftabs">
-          <button class="ftab active" id="ftab-manual">Manual Entry</button>
-          <button class="ftab" id="ftab-paste">Paste Email</button>
+          <button class="ftab active" id="ftab-manual">🖐️ Manual Entry</button>
+          <button class="ftab" id="ftab-paste">✉️ Paste from Email</button>
         </div>
         <div id="flight-manual">
           <div class="frow">
@@ -1757,7 +1818,7 @@
             "
           ></div>
         </div>
-        <button class="btn-primary" id="btn-add-flight">Save Flight</button>
+        <button class="btn-primary" id="btn-add-flight">💾 Save Flight</button>
       </div>
     </div>
 
@@ -1765,10 +1826,10 @@
     <div class="overlay" id="modal-hotel">
       <div class="modal">
         <div class="modal-handle"></div>
-        <div class="modal-title">Add Hotel 🏨</div>
+        <div class="modal-title">Add Hotel 🛏️</div>
         <div class="ftabs">
-          <button class="ftab active" id="htab-manual">Manual Entry</button>
-          <button class="ftab" id="htab-paste">Paste Email</button>
+          <button class="ftab active" id="htab-manual">🖐️ Manual Entry</button>
+          <button class="ftab" id="htab-paste">✉️ Paste from Email</button>
         </div>
         <div id="hotel-manual">
           <label class="flbl">Hotel Name</label>
@@ -1818,7 +1879,7 @@
             "
           ></div>
         </div>
-        <button class="btn-primary" id="btn-add-hotel">Save Hotel</button>
+        <button class="btn-primary" id="btn-add-hotel">💾 Save Hotel</button>
       </div>
     </div>
 
@@ -1829,7 +1890,7 @@
         <div class="modal-title">Edit Hotel ✏️</div>
         <div class="ftabs">
           <button class="ftab active" id="ehtab-manual">Details</button>
-          <button class="ftab" id="ehtab-paste">Paste Email</button>
+          <button class="ftab" id="ehtab-paste">Paste from Email</button>
         </div>
         <div id="edit-hotel-manual">
           <label class="flbl">Hotel Name</label>
@@ -1879,7 +1940,7 @@
     <div class="overlay" id="modal-place">
       <div class="modal">
         <div class="modal-handle"></div>
-        <div class="modal-title">Save a Place 📍</div>
+        <div class="modal-title">Save a Place 📌</div>
         <div class="ftabs">
           <button class="ftab active" id="ptab-manual">Manual</button>
           <button class="ftab" id="ptab-gmaps">Google Maps</button>
@@ -1892,12 +1953,14 @@
           <label class="flbl">Category</label>
           <select class="finput" id="pl-cat" style="margin-bottom: 16px">
             <option>🍽️ Food</option>
-            <option>🏛️ Sights</option>
-            <option>🏨 Hotel</option>
+            <option>🏛️ Sightseeing</option>
+            <option>🛏️ Hotel</option>
             <option>🛍️ Shopping</option>
             <option>☕ Café</option>
             <option>🎭 Culture</option>
-            <option>📍 Place</option>
+            <option>📌 Place</option>
+                      <option>📸 Photog spot</option>
+
           </select>
           <label class="flbl">Note</label>
           <input
@@ -1932,7 +1995,7 @@
             "
           ></div>
         </div>
-        <button class="btn-primary" id="btn-do-addplace">Save Place</button>
+        <button class="btn-primary" id="btn-do-addplace">💾 Save Place</button>
       </div>
     </div>
 
@@ -1948,12 +2011,14 @@
         <label class="flbl">Category</label>
         <select class="finput" id="ep-cat" style="margin-bottom: 16px">
           <option>🍽️ Food</option>
-          <option>🏛️ Sights</option>
-          <option>🏨 Hotel</option>
+          <option>🏛️ Sightseeing</option>
+          <option>🛏️ Hotel</option>
           <option>🛍️ Shopping</option>
           <option>☕ Café</option>
           <option>🎭 Culture</option>
-          <option>📍 Place</option>
+          <option>📌 Place</option>
+                    <option>📸 Photog spot</option>
+
         </select>
         <label class="flbl">Note</label>
         <input class="finput" id="ep-note" placeholder="Optional tip" />
@@ -2001,43 +2066,7 @@
         >
           📲 Share via QR
         </button>
-        <label
-          style="
-            position: relative;
-            overflow: hidden;
-            background: var(--sky);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            padding: 14px;
-            font-family: &quot;DM Sans&quot;, sans-serif;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            width: 100%;
-            text-align: center;
-          "
-        >
-          📂 Import Trip File
-          <input
-            type="file"
-            id="file-import-input2"
-            accept=".json"
-            style="
-              position: absolute;
-              inset: 0;
-              opacity: 0;
-              width: 100%;
-              height: 100%;
-              cursor: pointer;
-              font-size: 0;
-            "
-          />
-        </label>
+        <label for="file-import-input2" class="btn-primary" style="background:var(--sky);margin-bottom:0;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer">📂 Import Trip File</label>
       </div>
     </div>
 
@@ -2051,6 +2080,12 @@
           <button class="btn-primary" id="btn-do-import">
             ✈️ Add to My Trips
           </button>
+        </div>
+        <div id="import-itinerary-conflict" style="display:none;background:var(--surface);border-radius:var(--rs);padding:12px;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">🗓️ Itinerary conflict</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Both trips have itinerary data. What would you like to do?</div>
+          <button class="opt-btn" id="btn-import-itin-add">➕ Add to existing itinerary</button>
+          <button class="opt-btn" id="btn-import-itin-replace" style="margin-top:8px;color:#E85555;border-color:#E85555">🔄 Replace entire itinerary</button>
         </div>
         <div id="import-conflict" style="display: none">
           <div class="import-warning">
@@ -2176,6 +2211,7 @@
 
     <div class="toast" id="toast"></div>
 
+    <input type="file" id="file-import-input2" accept=".json" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;opacity:0">
     <script>
       const KEY = "tripcraft_v3";
       const PACK_CATS = [
@@ -2187,7 +2223,7 @@
       ];
       const catEmoji = {
         Clothing: "👕",
-        Toiletries: "🧴",
+        Toiletries: "🪥",
         "Travel Documents": "📄",
         Electronics: "🔌",
         Miscellaneous: "📦",
@@ -3019,14 +3055,14 @@
         el.innerHTML = "";
         const hotelPlaces = trip.places.filter(
           (p) =>
-            p.cat === "🏨 Hotel" &&
+            p.cat === "🛏️ Hotel" &&
             !trip.hotels.find(
               (h) => h.name.toLowerCase() === p.name.toLowerCase(),
             ),
         );
         if (!trip.hotels.length && !hotelPlaces.length) {
           el.innerHTML =
-            '<div class="empty-state"><div class="empty-icon">🏨</div><div class="empty-text">No hotels yet</div></div>';
+            '<div class="empty-state"><div class="empty-icon">🛏️</div><div class="empty-text">No hotels yet</div></div>';
           return;
         }
         trip.hotels.forEach((h) => {
@@ -3038,7 +3074,7 @@
             ? fmtFull(new Date(h.checkout + "T12:00:00"))
             : "—";
           const t1 = mk("div", "booking-type");
-          t1.textContent = "🏨 Hotel";
+          t1.textContent = "🛏️ Hotel";
           const t2 = mk("div", "hotel-name");
           t2.textContent = h.name;
           const t3 = mk("div", "hotel-dates");
@@ -3055,7 +3091,7 @@
           if (h.addr) {
             const d = mk("div", "hotel-dates");
             d.style.marginTop = "4px";
-            d.textContent = "📍 " + h.addr;
+            d.textContent = "📌 " + h.addr;
             card.appendChild(d);
           }
           const doDelete = () =>
@@ -3133,7 +3169,7 @@
         $("hotel-preview").style.display = "none";
         renderHotels(t);
         renderPlaces(t);
-        toast("Hotel saved! 🏨");
+        toast("Hotel saved! 🛏️");
       });
       $("btn-add-hotel-trip").addEventListener("click", () => {
         // Reset modal to manual tab
@@ -3213,7 +3249,7 @@
           (checkin ? "Check-in: " + checkin + "<br>" : "") +
           (checkout ? "Check-out: " + checkout + "<br>" : "") +
           (conf ? "Conf: <b>" + conf + "</b><br>" : "") +
-          (addr ? "📍 " + addr : "");
+          (addr ? "📌 " + addr : "");
         // Also populate manual fields for review
         act("htab-manual", "htab-paste");
         $("hotel-manual").style.display = "block";
@@ -3307,7 +3343,7 @@
         editingHotel = null;
         renderHotels(trip);
         renderPlaces(trip);
-        toast("Hotel updated! 🏨");
+        toast("Hotel updated! 🛏️");
       });
       $("btn-delete-edithotel").addEventListener("click", () => {
         if (!editingHotel) return;
@@ -3325,10 +3361,10 @@
       // ── PLACES ──
       function catEmojiFn(cat) {
         const c = cat || "";
-        let e = "📍";
+        let e = "📌";
         if (c.includes("Food")) e = "🍽️";
         else if (c.includes("Sight")) e = "🏛️";
-        else if (c.includes("Hotel")) e = "🏨";
+        else if (c.includes("Hotel")) e = "🛏️";
         else if (c.includes("Shop")) e = "🛍️";
         else if (c.includes("Caf")) e = "☕";
         else if (c.includes("Cultur")) e = "🎭";
@@ -3338,16 +3374,16 @@
       function groupByCategory(places) {
         const order = [
           "🍽️ Food",
-          "🏛️ Sights",
-          "🏨 Hotel",
+          "🏛️ Sightseeing",
+          "🛏️ Hotel",
           "🛍️ Shopping",
           "☕ Café",
           "🎭 Culture",
-          "📍 Place",
+          "📌 Place",
         ];
         const g = {};
         places.forEach((p) => {
-          const c = p.cat || "📍 Place";
+          const c = p.cat || "📌 Place";
           if (!g[c]) g[c] = [];
           g[c].push(p);
         });
@@ -3375,7 +3411,7 @@
             all.push({
               name: h.name,
               area: h.addr || "",
-              cat: "🏨 Hotel",
+              cat: "🛏️ Hotel",
               note: "",
               rating: 0,
               _hotelRef: h,
@@ -3400,9 +3436,9 @@
         const bg = mk("div", "swipe-del-bg");
         bg.innerHTML = TRASH_HTML;
         const card = mk("div", "place-card");
-        const [bgC, fgC] = catColor(p.cat || "📍 Place");
+        const [bgC, fgC] = catColor(p.cat || "📌 Place");
         const eb = mk("div", "place-emoji-box");
-        eb.innerHTML = catEmojiFn(p.cat || "📍 Place");
+        eb.innerHTML = catEmojiFn(p.cat || "📌 Place");
         eb.style.cssText = "background:" + bgC + ";color:" + fgC;
         const info = mk("div", "place-info");
         const nm = mk("div", "place-name");
@@ -3457,7 +3493,7 @@
         $("ep-name").value = p.name || "";
         $("ep-area").value = p.area || "";
         $("ep-note").value = p.note || "";
-        $("ep-cat").value = p.cat || "📍 Place";
+        $("ep-cat").value = p.cat || "📌 Place";
         $("ep-date").value = p.date || "";
         $("ep-time").value = p.time || "";
         openModal("modal-edit-place");
@@ -3469,7 +3505,7 @@
         const all = mergedPlaces(trip); // includes both trip.places AND trip.hotels
         if (!all.length) {
           el.innerHTML =
-            '<div class="empty-state"><div class="empty-icon">📍</div><div class="empty-text">No saved places yet — tap + below</div></div>';
+            '<div class="empty-state"><div class="empty-icon">📌</div><div class="empty-text">No saved places yet — tap + below</div></div>';
         } else {
           groupByCategory(all).forEach(([cat, places]) => {
             const hdr = mk("div", "place-cat-hdr");
@@ -3526,8 +3562,15 @@
             '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">No trip dates set</div></div>';
           return;
         }
-        const start = new Date(trip.start + "T00:00:00");
-        const end = new Date(trip.end + "T23:59:59");
+        let start = new Date(trip.start + "T00:00:00");
+        let end = new Date(trip.end + "T23:59:59");
+        // Expand range to cover any itinerary entries outside the trip dates
+        (trip.itinerary || []).forEach((it) => {
+          if (!it.date) return;
+          const d = new Date(it.date + "T00:00:00");
+          if (d < start) start = d;
+          if (d > end) end = d;
+        });
         const days = Math.round((end - start) / 86400000) + 1;
         let hasAny = false;
         for (let d = 0; d < days; d++) {
@@ -3547,11 +3590,15 @@
             if (h.checkout === ds)
               items.push({ type: "checkout", time: "", data: h });
           });
-          // Places (show all, no date filtering — spread evenly or show on all days)
-          // Only show places that have been assigned to this day via p.date
+          // Places with assigned dates
           trip.places.forEach((p) => {
             if (p.date === ds)
               items.push({ type: "place", time: p.time || "", data: p });
+          });
+          // Itinerary entries from Sheets import
+          (trip.itinerary || []).forEach((it) => {
+            if (it.date === ds)
+              items.push({ type: "itinerary", time: "", data: it });
           });
           if (!items.length) continue;
           hasAny = true;
@@ -3588,6 +3635,8 @@
             (d + 1) +
             "</span>";
           dayEl.appendChild(hdr);
+          const dz = mk("div", "tl-drop-zone");
+          dz.dataset.date = ds;
           items.forEach((item) => {
             const row = mk("div", "timeline-item");
             const icon = mk("div", "tl-icon");
@@ -3612,7 +3661,7 @@
                   : "");
               content.append(sub, tag);
             } else if (item.type === "checkin") {
-              icon.textContent = "🏨";
+              icon.textContent = "🛏️";
               icon.style.background = "#F5F0FF";
               const tag = mk("span", "tl-tag");
               tag.textContent = "CHECK-IN";
@@ -3626,7 +3675,7 @@
               }
               content.appendChild(tag);
             } else if (item.type === "checkout") {
-              icon.textContent = "🏨";
+              icon.textContent = "🛏️";
               icon.style.background = "#F5F5F5";
               const tag = mk("span", "tl-tag");
               tag.textContent = "CHECK-OUT";
@@ -3635,9 +3684,9 @@
                 '<div class="tl-title">' + item.data.name + "</div>";
               content.appendChild(tag);
             } else if (item.type === "place") {
-              const [bgC, fgC] = catColor(item.data.cat || "📍 Place");
+              const [bgC, fgC] = catColor(item.data.cat || "📌 Place");
               icon.style.background = bgC;
-              icon.innerHTML = catEmojiFn(item.data.cat || "📍 Place");
+              icon.innerHTML = catEmojiFn(item.data.cat || "📌 Place");
               content.innerHTML =
                 '<div class="tl-title">' + item.data.name + "</div>";
               if (item.data.area) {
@@ -3656,15 +3705,86 @@
                 t.style.cssText = "background:" + bgC + ";color:" + fgC;
                 content.appendChild(t);
               }
+            } else if (item.type === "itinerary") {
+              icon.textContent = "🗓️";
+              icon.style.background = "#E8F4FF";
+              content.innerHTML = '<div class="tl-title">' + item.data.location + "</div>";
+              if (item.data.note) {
+                const s = mk("div", "tl-sub");
+                s.textContent = item.data.note;
+                content.appendChild(s);
+              }
+              // Drag handle (left side)
+              const handle = mk("div", "drag-handle");
+              handle.innerHTML = '<svg width="10" height="16" viewBox="0 0 10 16"><circle cx="3" cy="3" r="1.5" fill="currentColor"/><circle cx="7" cy="3" r="1.5" fill="currentColor"/><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="7" cy="8" r="1.5" fill="currentColor"/><circle cx="3" cy="13" r="1.5" fill="currentColor"/><circle cx="7" cy="13" r="1.5" fill="currentColor"/></svg>';
+              // Edit button (right side)
+              const itEdit = mk("button");
+              itEdit.style.cssText = "padding:6px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent";
+              itEdit.textContent = "✏️";
+              itEdit.addEventListener("click", (e) => { e.stopPropagation(); openEditItinerary(trip, item.data); });
+              row.append(handle, icon, content, itEdit);
+              // Wrap in swipe row for delete
+              const itWrap = makeSwipeRow(row, () => {
+                const idx = (trip.itinerary || []).indexOf(item.data);
+                if (idx > -1) trip.itinerary.splice(idx, 1);
+                save();
+                slideRemove(itWrap, () => renderTimeline(trip));
+              });
+              // Drag to move between days
+              let itDragging = false, itGhost = null, itDragEntry = item.data;
+              function itStartD(cx, cy) {
+                itDragging = true;
+                row.classList.add("dragging");
+                itGhost = row.cloneNode(true);
+                itGhost.style.cssText = "position:fixed;z-index:9999;pointer-events:none;width:" + row.offsetWidth + "px;opacity:.85;box-shadow:0 8px 32px rgba(0,0,0,.2);border-radius:var(--rs);transform:rotate(1.5deg);transition:none;";
+                itGhost.style.left = cx - row.offsetWidth/2 + "px";
+                itGhost.style.top = cy - row.offsetHeight/2 + "px";
+                document.body.appendChild(itGhost);
+                document.querySelectorAll(".tl-drop-zone").forEach(z => z.classList.add("drop-ready"));
+              }
+              function itMoveD(cx, cy) {
+                if (!itDragging || !itGhost) return;
+                itGhost.style.left = cx - itGhost.offsetWidth/2 + "px";
+                itGhost.style.top = cy - itGhost.offsetHeight/2 + "px";
+                document.querySelectorAll(".tl-drop-zone").forEach(z => {
+                  const r = z.getBoundingClientRect();
+                  z.classList.toggle("drop-over", cx >= r.left && cx <= r.right && cy >= r.top && cy <= r.bottom);
+                });
+              }
+              function itEndD(cx, cy) {
+                if (!itDragging) return;
+                itDragging = false;
+                if (itGhost) { itGhost.remove(); itGhost = null; }
+                row.classList.remove("dragging");
+                document.querySelectorAll(".tl-drop-zone").forEach(z => z.classList.remove("drop-ready","drop-over"));
+                const tgt = document.elementFromPoint(cx, cy)?.closest(".tl-drop-zone");
+                const newDate = tgt?.dataset.date;
+                if (newDate && newDate !== itDragEntry.date) {
+                  const days2 = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+                  const months2 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+                  const nd = new Date(newDate + 'T00:00:00');
+                  itDragEntry.date = newDate;
+                  itDragEntry.day = days2[nd.getDay()] + ' ' + months2[nd.getMonth()] + ' ' + nd.getDate();
+                  save();
+                  renderTimeline(trip);
+                }
+              }
+              handle.addEventListener("mousedown", e => { e.preventDefault(); itStartD(e.clientX,e.clientY); const mm=ev=>itMoveD(ev.clientX,ev.clientY); const mu=ev=>{itEndD(ev.clientX,ev.clientY);document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);}; document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu); });
+              handle.addEventListener("touchstart", e => { const t=e.touches[0]; itStartD(t.clientX,t.clientY); }, {passive:true});
+              handle.addEventListener("touchmove", e => { const t=e.touches[0]; itMoveD(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
+              handle.addEventListener("touchend", e => { const t=e.changedTouches[0]; itEndD(t.clientX,t.clientY); });
+              dz.appendChild(itWrap);
+              return;
             }
             row.append(icon, content);
-            dayEl.appendChild(row);
+            dz.appendChild(row);
           });
+          dayEl.appendChild(dz);
           el.appendChild(dayEl);
         }
         if (!hasAny) {
           el.innerHTML =
-            '<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">Add dates to places to see them here.<br><br>Flights and hotel check-in/out dates appear automatically.</div></div>';
+            '<div class="empty-state"><div class="empty-icon">📆</div><div class="empty-text">Add dates to places to see them here.<br><br>Flights and hotel check-in/out dates appear automatically.</div></div>';
         }
       }
 
@@ -3734,7 +3854,7 @@
         const parsed = {
           name: "",
           area: "",
-          cat: "📍 Place",
+          cat: "📌 Place",
           rating: 0,
           gmapsUrl: "",
         };
@@ -3761,7 +3881,7 @@
           "<b>" +
           parsed.name +
           "</b><br>" +
-          (parsed.area ? "📍 " + parsed.area + "<br>" : "") +
+          (parsed.area ? "📌 " + parsed.area + "<br>" : "") +
           "Coords: " +
           (parsed.lat ? parsed.lat + ", " + parsed.lng : "unknown");
         toast("URL parsed!");
@@ -3795,7 +3915,7 @@
         renderPlaces(t);
         renderHotels(t);
         if (placeSrc === "global") renderGlobalPlaces();
-        toast("Place saved! 📍");
+        toast("Place saved! 📌");
       });
       $("btn-add-place").addEventListener("click", () =>
         openPlaceModal("trip"),
@@ -4264,6 +4384,8 @@
       });
 
       // import-file-btn is now a label, no JS needed
+
+
       $("file-import-input2").addEventListener("change", (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -4309,8 +4431,12 @@
           fmt(new Date(t.end + "T12:00:00")) +
           "</span></div>";
         const exists = D.trips.find((x) => x.id === t.id || x.name === t.name);
+        const hasItinConflict = exists &&
+          (exists.itinerary || []).length > 0 &&
+          (t.itinerary || []).length > 0;
         $("import-no-conflict").style.display = exists ? "none" : "block";
         $("import-conflict").style.display = exists ? "block" : "none";
+        $("import-itinerary-conflict").style.display = hasItinConflict ? "block" : "none";
         openModal("modal-import");
       }
       $("btn-do-import").addEventListener("click", () => {
@@ -4325,6 +4451,36 @@
         importTrip = null;
       });
       $("btn-cancel-import").addEventListener("click", closeModals);
+
+      function applyItineraryImport(replace) {
+        if (!importTrip) return;
+        const local = D.trips.find((x) => x.id === importTrip.id || x.name === importTrip.name);
+        if (!local) return;
+        if (!local.itinerary) local.itinerary = [];
+        if (replace) {
+          local.itinerary = [...(importTrip.itinerary || [])];
+        } else {
+          (importTrip.itinerary || []).forEach(entry => {
+            // Avoid exact duplicates by date+location
+            const isDupe = local.itinerary.find(e => e.date === entry.date && e.location === entry.location);
+            if (!isDupe) local.itinerary.push(entry);
+          });
+        }
+        save();
+      }
+
+      $("btn-import-itin-add").addEventListener("click", () => {
+        applyItineraryImport(false);
+        closeModals(); renderHome();
+        toast("Itinerary added to existing! 🗓️");
+        importTrip = null;
+      });
+      $("btn-import-itin-replace").addEventListener("click", () => {
+        applyItineraryImport(true);
+        closeModals(); renderHome();
+        toast("Itinerary replaced! 🗓️");
+        importTrip = null;
+      });
       $("btn-import-merge").addEventListener("click", () => {
         if (!importTrip) return;
         const local = D.trips.find(
@@ -4750,6 +4906,345 @@
         } catch (e) {}
         history.replaceState({}, "", location.pathname);
       })();
+
+
+      // ── SHEETS IMPORT ──
+      let sheetsImportTrip = null;
+      let sheetsImportSource = null; // 'places' | 'timeline'
+      let sheetsImportMode = 'locations'; // 'locations' | 'itinerary'
+      let sheetsParsed = [];
+
+      function openSheetsImport(trip) {
+        sheetsImportTrip = trip;
+        sheetsImportMode = 'locations';
+        $('sheets-paste-area').value = '';
+        $('sheets-tab-name').value = '';
+        $('sheets-step-paste').style.display = 'block';
+        $('sheets-step-preview').style.display = 'none';
+        $('sheets-location-mode').style.display = 'block';
+        $('sheets-itinerary-mode').style.display = 'none';
+        $('sheets-tabs').style.display = 'none';
+        openModal('modal-sheets-import');
+      }
+
+      // Tab switching
+      $('stab-locations').addEventListener('click', () => {
+        sheetsImportMode = 'locations';
+        $('stab-locations').classList.add('active');
+        $('stab-itinerary').classList.remove('active');
+        $('sheets-location-mode').style.display = 'block';
+        $('sheets-itinerary-mode').style.display = 'none';
+      });
+      $('stab-itinerary').addEventListener('click', () => {
+        sheetsImportMode = 'itinerary';
+        $('stab-itinerary').classList.add('active');
+        $('stab-locations').classList.remove('active');
+        $('sheets-location-mode').style.display = 'none';
+        $('sheets-itinerary-mode').style.display = 'block';
+      });
+
+      function parseSheetsTSV(text) {
+        // Split into rows, then columns by tab
+        return text.trim().split(/\r?\n/).map(row => row.split('\t'));
+      }
+
+      function parseSheetsLocations(text, tabName, cat) {
+        const rows = parseSheetsTSV(text);
+        const places = [];
+        rows.forEach(cols => {
+          // All columns joined — handles single-column freeform text and multi-column layouts
+          const parts = cols.map(c => c.trim()).filter(Boolean);
+          if (!parts.length) return;
+
+          // Skip blank or very short rows
+          const fullText = parts.join(' ').trim();
+          if (fullText.length < 2) return;
+
+          // Separate out any URLs
+          const links = parts.filter(p => p.startsWith('http'));
+          const textParts = parts.filter(p => !p.startsWith('http'));
+
+          // For multi-column: first col = name, rest = note
+          // For single-column freeform: whole thing = name (it's descriptive)
+          let name, note;
+          if (textParts.length > 1) {
+            name = textParts[0];
+            note = [textParts.slice(1).join(' '), ...links].filter(Boolean).join(' | ');
+          } else {
+            // Single cell — use full text as name, links as note
+            name = textParts[0] || fullText;
+            note = links.join(' | ');
+          }
+
+          if (!name) return;
+          places.push({ name, area: tabName, cat, note, rating: 0 });
+        });
+        return places;
+      }
+
+      // Parse "Apr 4" or "Apr 4, 2025" style dates into YYYY-MM-DD
+      // Uses the trip year if available, falls back to current year
+      function parseSheetDate(str, tripYear) {
+        if (!str) return null;
+        const months = {jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+        const m = str.trim().match(/([a-z]+)\s+(\d+)/i);
+        if (!m) return null;
+        const mo = months[m[1].toLowerCase().slice(0,3)];
+        if (!mo) return null;
+        const day = parseInt(m[2]);
+        const yr = tripYear || new Date().getFullYear();
+        return yr + '-' + String(mo).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+      }
+
+      function parseSheetsItinerary(text) {
+        const rows = parseSheetsTSV(text);
+        const places = [];
+        // Detect trip year from the data (look for a 4-digit year in any cell)
+        let tripYear = null;
+        for (const row of rows) {
+          for (const cell of row) {
+            const ym = cell.match(/\b(202\d)\b/);
+            if (ym) { tripYear = parseInt(ym[1]); break; }
+          }
+          if (tripYear) break;
+        }
+        // Fall back to the current trip's year via sheetsImportTrip
+        if (!tripYear && sheetsImportTrip && sheetsImportTrip.start) {
+          tripYear = parseInt(sheetsImportTrip.start.slice(0,4));
+        }
+
+        rows.forEach(cols => {
+          // A=day, B=date, C=city header, D=activity, E=destination,
+          // F=hotel/city, G=map link, H=transit notes, I=other links
+          const day     = (cols[0] || '').trim();
+          const dateStr = (cols[1] || '').trim();
+          const cityHdr = (cols[2] || '').trim();
+          const act     = (cols[3] || '').trim();
+          const dest    = (cols[4] || '').trim();
+          const hotel   = (cols[5] || '').trim();
+          const mapLink = (cols[6] || '').trim();
+          const transit = (cols[7] || '').trim();
+          const link2   = (cols[8] || '').trim();
+
+          // Skip header row
+          if (dateStr.toLowerCase() === 'date' || day.toLowerCase() === 'a') return;
+
+          // Skip completely empty rows
+          if (!act && !dest && !cityHdr && !transit) return;
+
+          // Skip flight rows (they belong in Flights section)
+          const combined = (act + dest + cityHdr).toLowerCase();
+          if (combined.includes('depart') || combined.includes('arrive') ||
+              /[a-z]{2}\d{3,4}/i.test(act)) return;
+
+          // Main name: prefer col D (activity), fall back to col C or E
+          const name = act || cityHdr || dest;
+          if (!name || name.length < 2) return;
+
+          // Area: col E, F, or C
+          const area = dest || hotel || cityHdr || 'Itinerary';
+
+          // Parse the actual date for Timeline
+          const isoDate = parseSheetDate(dateStr, tripYear);
+
+          // Note: transit info and links
+          const noteParts = [];
+          if (transit) noteParts.push(transit);
+          const links = [mapLink, link2].filter(u => u.startsWith('http'));
+          if (links.length) noteParts.push(links.join(' '));
+          const note = noteParts.join(' · ');
+
+          // Auto-guess category
+          const all = combined + transit.toLowerCase();
+          let cat = '📌 Place';
+          if (all.includes('eat') || all.includes('ramen') || all.includes('food') ||
+              all.includes('restaurant') || all.includes('cafe') || all.includes('noodle') ||
+              all.includes('sushi') || all.includes('tonkatsu')) cat = '🍽️ Food';
+          else if (all.includes('temple') || all.includes('shrine') || all.includes('museum') ||
+              all.includes('park') || all.includes('castle') || all.includes('garden') ||
+              all.includes('pier') || all.includes('teamlab') || all.includes('puroland')) cat = '🏛️ Sightseeing';
+          else if (all.includes('shop') || all.includes('market') || all.includes('mall') ||
+              all.includes('buy') || all.includes('pokemon')) cat = '🛍️ Shopping';
+
+          // Build itinerary entry: {date, day, location, note}
+          const entry = {
+            date: isoDate || '',
+            day: [day, dateStr].filter(Boolean).join(' '),
+            location: name,
+            note: note
+          };
+          places.push(entry);
+        });
+        return places;
+      }
+
+      $('btn-parse-sheets').addEventListener('click', () => {
+        const text = $('sheets-paste-area').value.trim();
+        if (!text) { toast('Paste some cells first'); return; }
+
+        if (sheetsImportMode === 'locations') {
+          const tabName = $('sheets-tab-name').value.trim() || 'Imported';
+          const cat = $('sheets-cat').value;
+          sheetsParsed = parseSheetsLocations(text, tabName, cat);
+        } else {
+          sheetsParsed = parseSheetsItinerary(text);
+        }
+
+        if (!sheetsParsed.length) { toast('Nothing found — check your pasted data'); return; }
+
+        // Build preview
+        const list = $('sheets-preview-list');
+        list.innerHTML = '';
+        sheetsParsed.forEach((p, i) => {
+          const card = mk('div');
+          card.style.cssText = 'background:var(--surface);border-radius:var(--rs);padding:10px 12px;font-size:13px;position:relative';
+          card.innerHTML = '<div style="font-weight:600;margin-bottom:2px">' + p.name + '</div>'
+            + '<div style="color:var(--muted);font-size:12px">' + [p.cat, p.area, p.note].filter(Boolean).join(' · ') + '</div>';
+          // Remove button
+          const rm = mk('button');
+          rm.textContent = '✕';
+          rm.style.cssText = 'position:absolute;top:8px;right:8px;background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 6px';
+          rm.addEventListener('click', () => { sheetsParsed.splice(i, 1); $('btn-parse-sheets').click(); });
+          card.appendChild(rm);
+          list.appendChild(card);
+        });
+
+        const isTimeline = sheetsImportSource === 'timeline';
+        const hasExisting = isTimeline && sheetsImportTrip && (sheetsImportTrip.itinerary || []).length > 0;
+        $('sheets-preview-count').textContent = sheetsParsed.length + (isTimeline ? ' itinerary entries' : ' places') + ' found — review and remove any you don\'t want:';
+        // Show the right confirm UI
+        $('sheets-timeline-opts').style.display = hasExisting ? 'block' : 'none';
+        $('btn-sheets-confirm').style.display = hasExisting ? 'none' : 'block';
+        $('sheets-step-paste').style.display = 'none';
+        $('sheets-step-preview').style.display = 'block';
+      });
+
+      function doSheetsImport(replace) {
+        if (!sheetsImportTrip || !sheetsParsed.length) return;
+        if (sheetsImportSource === 'timeline') {
+          if (!sheetsImportTrip.itinerary) sheetsImportTrip.itinerary = [];
+          if (replace) sheetsImportTrip.itinerary = [...sheetsParsed];
+          else sheetsParsed.forEach(p => sheetsImportTrip.itinerary.push(p));
+          save(); closeModals(); renderTimeline(sheetsImportTrip);
+          toast(sheetsParsed.length + ' itinerary entries ' + (replace ? 'replaced' : 'added') + '! 🗓️');
+        } else {
+          sheetsParsed.forEach(p => sheetsImportTrip.places.push(p));
+          save(); closeModals(); renderPlaces(sheetsImportTrip);
+          toast(sheetsParsed.length + ' places imported! 📌');
+        }
+        sheetsParsed = [];
+        sheetsImportSource = null;
+      }
+      $('btn-sheets-confirm').addEventListener('click', () => doSheetsImport(false));
+      $('btn-sheets-add').addEventListener('click', () => doSheetsImport(false));
+      $('btn-sheets-replace').addEventListener('click', () => doSheetsImport(true));
+
+      $('btn-sheets-back').addEventListener('click', () => {
+        $('sheets-step-paste').style.display = 'block';
+        $('sheets-step-preview').style.display = 'none';
+      });
+      $('btn-sheets-cancel1').addEventListener('click', () => closeModals());
+
+      $('btn-timeline-import').addEventListener('click', () => {
+        const t = D.trips[curTrip];
+        if (!t) { toast('Open a trip first'); return; }
+        sheetsImportSource = 'timeline';
+        sheetsImportMode = 'itinerary';
+        $('sheets-paste-area').value = '';
+        $('sheets-tab-name').value = '';
+        $('sheets-step-paste').style.display = 'block';
+        $('sheets-step-preview').style.display = 'none';
+        $('sheets-location-mode').style.display = 'none';
+        $('sheets-itinerary-mode').style.display = 'block';
+        $('sheets-tabs').style.display = 'none';
+        sheetsImportTrip = t;
+        openModal('modal-sheets-import');
+      });
+      $('btn-sheets-import').addEventListener('click', () => {
+        const t = D.trips[curTrip];
+        if (!t) { toast('Open a trip first'); return; }
+        sheetsImportSource = 'places';
+        openSheetsImport(t);
+      });
+
+      // ── EDIT ITINERARY ENTRY ──
+      let editingItinerary = null; // { trip, entry }
+
+      function openEditItinerary(trip, entry) {
+        editingItinerary = { trip, entry };
+        $('ei-day').value = entry.day || '';
+        $('ei-location').value = entry.location || '';
+        $('ei-note').value = entry.note || '';
+
+        // Populate move-to-day dropdown with all days in itinerary range
+        const sel = $('ei-move-day');
+        sel.innerHTML = '';
+        const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        // Collect all unique dates from itinerary + trip range
+        const dates = new Set();
+        (trip.itinerary || []).forEach(it => { if (it.date) dates.add(it.date); });
+        // Also add trip date range
+        if (trip.start && trip.end) {
+          let d = new Date(trip.start + 'T00:00:00');
+          const end = new Date(trip.end + 'T00:00:00');
+          while (d <= end) {
+            dates.add(d.toISOString().slice(0,10));
+            d.setDate(d.getDate() + 1);
+          }
+        }
+        Array.from(dates).sort().forEach(ds => {
+          const d = new Date(ds + 'T00:00:00');
+          const opt = document.createElement('option');
+          opt.value = ds;
+          opt.textContent = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+          if (ds === entry.date) opt.selected = true;
+          sel.appendChild(opt);
+        });
+
+        openModal('modal-edit-itinerary');
+      }
+
+      $('btn-save-itinerary-edit').addEventListener('click', () => {
+        if (!editingItinerary) return;
+        const { trip, entry } = editingItinerary;
+        const newDate = $('ei-move-day').value;
+        entry.date = newDate;
+        // Auto-update day label from selected date if user hasn't customised it
+        if (newDate) {
+          const d = new Date(newDate + 'T00:00:00');
+          const days2 = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+          const months2 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          const autoDay = days2[d.getDay()] + ' ' + months2[d.getMonth()] + ' ' + d.getDate();
+          entry.day = $('ei-day').value.trim() || autoDay;
+        } else {
+          entry.day = $('ei-day').value.trim();
+        }
+        entry.location = $('ei-location').value.trim();
+        entry.note = $('ei-note').value.trim();
+        save();
+        closeModals();
+        renderTimeline(trip);
+        toast('Entry updated!');
+        editingItinerary = null;
+      });
+
+      $('btn-delete-itinerary-edit').addEventListener('click', () => {
+        if (!editingItinerary) return;
+        const { trip, entry } = editingItinerary;
+        const idx = (trip.itinerary || []).indexOf(entry);
+        if (idx > -1) trip.itinerary.splice(idx, 1);
+        save();
+        closeModals();
+        renderTimeline(trip);
+        toast('Entry deleted');
+        editingItinerary = null;
+      });
+
+      $('btn-cancel-itinerary-edit').addEventListener('click', () => {
+        closeModals();
+        editingItinerary = null;
+      });
 
       if ("serviceWorker" in navigator)
         navigator.serviceWorker.register("sw.js").catch(() => {});
