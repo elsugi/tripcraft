@@ -2320,14 +2320,35 @@
       <div class="modal">
         <div class="modal-handle"></div>
         <div class="modal-title">Import Packing List 📋</div>
-        <div id="pack-sheets-step-paste">
-          <label class="flbl">Person / Category</label>
-          <select class="finput" id="pack-sheets-cat" style="margin-bottom:12px"></select>
-          <label class="flbl">Paste rows from Google Sheets</label>
-          <textarea id="pack-sheets-area" rows="8" class="finput" placeholder="One item per row — paste from Sheets here" style="font-size:12px;font-family:monospace;resize:vertical"></textarea>
-          <button class="btn-primary" id="btn-parse-pack-sheets" style="background:var(--ink);margin-bottom:8px">🔍 Parse</button>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:16px;letter-spacing:0.5px;font-weight:600" id="pack-sheets-step-label">STEP 1 OF 3 — SELECT PERSON</div>
+
+        <!-- Step 1: Person -->
+        <div id="pack-sheets-step1">
+          <div id="pack-sheets-person-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+          <div id="pack-sheets-add-person-row" style="display:flex;gap:8px;margin-bottom:12px">
+            <input class="finput" id="pack-sheets-new-person" placeholder="New person name..." style="flex:1;margin-bottom:0"/>
+            <button class="btn-primary" id="btn-pack-sheets-add-person" style="width:auto;padding:0 16px;margin-bottom:0">Add</button>
+          </div>
           <button class="btn-primary" id="btn-pack-sheets-cancel1" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">Cancel</button>
         </div>
+
+        <!-- Step 2: Category -->
+        <div id="pack-sheets-step2" style="display:none">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="pack-sheets-person-label"></div>
+          <div id="pack-sheets-cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+          <button class="btn-primary" id="btn-pack-sheets-back1" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">← Back</button>
+        </div>
+
+        <!-- Step 3: Paste & Parse -->
+        <div id="pack-sheets-step3" style="display:none">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="pack-sheets-dest-label"></div>
+          <label class="flbl">Paste rows from Google Sheets</label>
+          <textarea id="pack-sheets-area" rows="7" class="finput" placeholder="One item per row — paste from Sheets here" style="font-size:12px;font-family:monospace;resize:vertical"></textarea>
+          <button class="btn-primary" id="btn-parse-pack-sheets" style="background:var(--ink);margin-bottom:8px">🔍 Parse</button>
+          <button class="btn-primary" id="btn-pack-sheets-back2" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">← Back</button>
+        </div>
+
+        <!-- Step 4: Preview -->
         <div id="pack-sheets-step-preview" style="display:none">
           <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="pack-sheets-count"></div>
           <div id="pack-sheets-preview-list" style="display:flex;flex-direction:column;gap:6px;max-height:40vh;overflow-y:auto;margin-bottom:16px"></div>
@@ -2765,44 +2786,108 @@
       // ── PACK SHEETS IMPORT ──
       let packSheetsParsed = [];
       let packSheetsTrip = null;
+      let packSheetsSelectedPerson = null; // null = base cats, string = person name
+      let packSheetsSelectedCat = null;
+
+      function packSheetsShowStep(step) {
+        ["pack-sheets-step1","pack-sheets-step2","pack-sheets-step3","pack-sheets-step-preview"].forEach(id => {
+          $(id).style.display = "none";
+        });
+        const labels = ["","STEP 1 OF 3 — SELECT PERSON","STEP 2 OF 3 — SELECT CATEGORY","STEP 3 OF 3 — PASTE LIST","REVIEW ITEMS"];
+        $("pack-sheets-step-label").textContent = labels[step] || "";
+        if (step === 1) $("pack-sheets-step1").style.display = "block";
+        else if (step === 2) $("pack-sheets-step2").style.display = "block";
+        else if (step === 3) $("pack-sheets-step3").style.display = "block";
+        else if (step === 4) $("pack-sheets-step-preview").style.display = "block";
+      }
+
+      function packSheetsRenderStep1(trip) {
+        const people = getPersonCats(trip);
+        const list = $("pack-sheets-person-list");
+        list.innerHTML = "";
+
+        // Base categories option
+        const baseBtn = mk("button");
+        baseBtn.style.cssText = "width:100%;text-align:left;padding:12px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent";
+        baseBtn.textContent = "📦 General (no person)";
+        baseBtn.addEventListener("click", () => {
+          packSheetsSelectedPerson = null;
+          packSheetsRenderStep2(trip);
+          packSheetsShowStep(2);
+        });
+        list.appendChild(baseBtn);
+
+        // One button per person
+        people.forEach(name => {
+          const btn = mk("button");
+          btn.style.cssText = "width:100%;text-align:left;padding:12px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent";
+          btn.textContent = getCatEmoji(name) + " " + name;
+          btn.addEventListener("click", () => {
+            packSheetsSelectedPerson = name;
+            packSheetsRenderStep2(trip);
+            packSheetsShowStep(2);
+          });
+          list.appendChild(btn);
+        });
+      }
+
+      function packSheetsRenderStep2(trip) {
+        const catList = $("pack-sheets-cat-list");
+        catList.innerHTML = "";
+        $("pack-sheets-person-label").textContent = packSheetsSelectedPerson
+          ? getCatEmoji(packSheetsSelectedPerson) + " " + packSheetsSelectedPerson
+          : "📦 General";
+
+        let cats;
+        if (packSheetsSelectedPerson) {
+          cats = getPersonSubCats(trip, packSheetsSelectedPerson).map(c => ({ cat: c.cat, label: subCatLabel(c.cat), emoji: subCatEmoji(c.cat) }));
+        } else {
+          cats = trip.packing.filter(c => !c.cat.includes("::")).map(c => ({ cat: c.cat, label: c.cat, emoji: getCatEmoji(c.cat) }));
+        }
+
+        cats.forEach(({ cat, label, emoji }) => {
+          const btn = mk("button");
+          btn.style.cssText = "width:100%;text-align:left;padding:12px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent";
+          btn.textContent = emoji + " " + label;
+          btn.addEventListener("click", () => {
+            packSheetsSelectedCat = cat;
+            $("pack-sheets-dest-label").textContent = "Adding to: " + emoji + " " + label;
+            $("pack-sheets-area").value = "";
+            packSheetsShowStep(3);
+          });
+          catList.appendChild(btn);
+        });
+      }
 
       $("btn-pack-sheets-import").addEventListener("click", () => {
         const trip = D.trips[curTrip];
         if (!trip) { toast("Open a trip first"); return; }
         packSheetsTrip = trip;
-        // Populate category dropdown with all cats including people
-        const sel = $("pack-sheets-cat");
-        // Group: base cats first, then person::subcats grouped
-        const baseCats = trip.packing.filter(c => !c.cat.includes("::")).map(c => c.cat);
-        const personCatsList = getPersonCats(trip);
-        let opts = baseCats.map(cat => `<option value="${cat}">${getCatEmoji(cat)} ${cat}</option>`).join("");
-        personCatsList.forEach(person => {
-          getPersonSubCats(trip, person).forEach(c => {
-            opts += `<option value="${c.cat}">${getCatEmoji(person)} ${person} › ${subCatLabel(c.cat)}</option>`;
-          });
-        });
-        opts += '<option value="__new__">➕ New person...</option>';
-        sel.innerHTML = opts;
-        $("pack-sheets-area").value = "";
-        $("pack-sheets-step-paste").style.display = "block";
-        $("pack-sheets-step-preview").style.display = "none";
+        packSheetsSelectedPerson = null;
+        packSheetsSelectedCat = null;
+        packSheetsRenderStep1(trip);
+        packSheetsShowStep(1);
         openModal("modal-pack-sheets");
       });
+
+      $("btn-pack-sheets-add-person").addEventListener("click", () => {
+        const name = $("pack-sheets-new-person").value.trim();
+        if (!name) { toast("Enter a name"); return; }
+        if (getPersonCats(packSheetsTrip).includes(name)) { toast("Already exists"); return; }
+        ensurePersonSubCats(packSheetsTrip, name);
+        save();
+        renderPackTabs(packSheetsTrip);
+        $("pack-sheets-new-person").value = "";
+        packSheetsRenderStep1(packSheetsTrip);
+        toast(getCatEmoji(name) + " " + name + " added!");
+      });
+      $("pack-sheets-new-person").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-pack-sheets-add-person").click(); });
 
       $("btn-parse-pack-sheets").addEventListener("click", async () => {
         const text = $("pack-sheets-area").value.trim();
         if (!text) { toast("Paste your list first"); return; }
-        let cat = $("pack-sheets-cat").value;
-        if (cat === "__new__") {
-          const name = prompt("New person name:");
-          if (!name) return;
-          cat = name.trim();
-          if (!packSheetsTrip.packing.find(c => c.cat === cat)) {
-            packSheetsTrip.packing.push({ cat, items: [] });
-            save();
-            refreshPackCatSelect(packSheetsTrip);
-          }
-        }
+        const cat = packSheetsSelectedCat;
+        if (!cat) { toast("No category selected"); return; }
         const btn = $("btn-parse-pack-sheets");
         btn.textContent = "⏳ Parsing...";
         btn.disabled = true;
@@ -2818,21 +2903,20 @@ Return ONLY the JSON array, nothing else.`;
 
           const list = $("pack-sheets-preview-list");
           list.innerHTML = "";
-          packSheetsParsed.forEach((item, i) => {
+          packSheetsParsed.forEach((item, idx) => {
             const row = mk("div");
             row.style.cssText = "display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:var(--rs);padding:8px 12px;font-size:13px";
             row.innerHTML = `<span style="flex:1">${item}</span>`;
             const rm = mk("button");
             rm.textContent = "✕";
             rm.style.cssText = "background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 6px";
-            rm.addEventListener("click", () => { packSheetsParsed.splice(i, 1); $("btn-parse-pack-sheets").click(); });
+            rm.addEventListener("click", () => { packSheetsParsed.splice(idx, 1); $("btn-parse-pack-sheets").click(); });
             row.appendChild(rm);
             list.appendChild(row);
           });
-          $("pack-sheets-count").textContent = packSheetsParsed.length + " items found for " + getCatEmoji(cat) + " " + cat;
+          $("pack-sheets-count").textContent = packSheetsParsed.length + " items found";
           $("btn-pack-sheets-confirm").dataset.cat = cat;
-          $("pack-sheets-step-paste").style.display = "none";
-          $("pack-sheets-step-preview").style.display = "block";
+          packSheetsShowStep(4);
         } catch(e) {
           toast("Parse failed: " + e.message);
         } finally {
@@ -2850,13 +2934,12 @@ Return ONLY the JSON array, nothing else.`;
         save();
         closeModals();
         renderPackItems($("trip-pack-list"), packSheetsTrip, false);
-        toast(packSheetsParsed.length + " items added to " + cat + "! 🧳");
+        toast(packSheetsParsed.length + " items added! 🧳");
         packSheetsParsed = [];
       });
-      $("btn-pack-sheets-back").addEventListener("click", () => {
-        $("pack-sheets-step-paste").style.display = "block";
-        $("pack-sheets-step-preview").style.display = "none";
-      });
+      $("btn-pack-sheets-back").addEventListener("click", () => packSheetsShowStep(3));
+      $("btn-pack-sheets-back1").addEventListener("click", () => packSheetsShowStep(1));
+      $("btn-pack-sheets-back2").addEventListener("click", () => packSheetsShowStep(2));
       $("btn-pack-sheets-cancel1").addEventListener("click", closeModals);
 
       if($("btn-open-pack-templates")) $("btn-open-pack-templates").addEventListener("click", () => {
