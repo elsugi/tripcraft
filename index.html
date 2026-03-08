@@ -3121,7 +3121,7 @@ Return ONLY the JSON array, nothing else.`;
             });
           // Edit button
           const flEditBtn = mk("button");
-          flEditBtn.style.cssText = "padding:6px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;margin-right:4px";
+          flEditBtn.style.cssText = "position:absolute;top:12px;right:44px;padding:5px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent";
           flEditBtn.textContent = "✏️";
           flEditBtn.addEventListener("click", (e) => { e.stopPropagation(); openEditFlight(trip, f); });
           card.appendChild(flEditBtn);
@@ -3291,15 +3291,9 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
             openEditHotel(trip, h);
           });
           card.appendChild(editBtn);
-          // Edit button
-          const flEditBtn = mk("button");
-          flEditBtn.style.cssText = "padding:6px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;margin-right:4px";
-          flEditBtn.textContent = "✏️";
-          flEditBtn.addEventListener("click", (e) => { e.stopPropagation(); openEditFlight(trip, f); });
-          card.appendChild(flEditBtn);
           card.appendChild(makeDelBtn(doDelete));
           card.style.cursor = "pointer";
-          card.addEventListener("click", () => openEditFlight(trip, f));
+          card.addEventListener("click", () => openEditHotel(trip, h));
           const wrap = makeSwipeRow(card, doDelete);
           el.appendChild(wrap);
         });
