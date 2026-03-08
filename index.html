@@ -1446,7 +1446,8 @@
       </div>
       <div class="trip-section" id="tab-timeline">
         <div style="display:flex;gap:8px;margin-bottom:0">
-          <button class="add-btn" id="btn-timeline-import" style="background:var(--surface);color:var(--ink);border:1.5px solid var(--border)">📋 Import from Sheets</button>
+          <button class="add-btn" id="btn-add-itinerary-entry" style="flex:1">+ Add Entry</button>
+          <button class="add-btn" id="btn-timeline-import" style="flex:1;background:var(--surface);color:var(--ink);border:1.5px solid var(--border)">📋 Import from Sheets</button>
         </div>
         <div id="timeline-list"></div>
       </div>
@@ -1718,7 +1719,7 @@
 <div class="overlay" id="modal-edit-itinerary">
   <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title">Edit Entry 🗓️</div>
+    <div class="modal-title" id="ei-modal-title">Edit Entry 🗓️</div>
     <label class="flbl">Move to Day</label>
     <select class="finput" id="ei-move-day" style="margin-bottom:12px"></select>
     <label class="flbl">Day Label</label>
@@ -1726,7 +1727,14 @@
     <label class="flbl">Location / City</label>
     <input class="finput" id="ei-location" placeholder="e.g. Yokohama" style="margin-bottom:12px"/>
     <label class="flbl">Notes</label>
-    <textarea class="finput" id="ei-note" rows="3" placeholder="Transit info, tips..." style="margin-bottom:16px;resize:vertical"></textarea>
+    <textarea class="finput" id="ei-note" rows="3" placeholder="Transit info, tips..." style="margin-bottom:12px;resize:vertical"></textarea>
+    <label class="flbl">Link</label>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <input class="finput" id="ei-link" placeholder="https://..." style="flex:1;margin-bottom:0"/>
+      <button id="btn-ei-parse-links" style="padding:8px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rs);cursor:pointer;font-size:13px;flex-shrink:0" title="Auto-detect map links">🔍</button>
+    </div>
+    <label class="flbl">Maps Link</label>
+    <input class="finput" id="ei-maps" placeholder="Google Maps / Apple Maps URL" style="margin-bottom:16px"/>
     <button class="btn-primary" id="btn-save-itinerary-edit" style="margin-bottom:8px">Save Changes</button>
     <button class="btn-primary" id="btn-delete-itinerary-edit" style="background:#E85555;margin-bottom:8px">🗑️ Delete Entry</button>
     <button class="btn-primary" id="btn-cancel-itinerary-edit" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">Cancel</button>
@@ -4087,6 +4095,27 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
                 s.textContent = item.data.note;
                 content.appendChild(s);
               }
+              const linkRow = mk("div");
+              linkRow.style.cssText = "display:flex;gap:6px;margin-top:4px;flex-wrap:wrap";
+              if (item.data.maps) {
+                const ml = document.createElement("a");
+                ml.href = item.data.maps;
+                ml.target = "_blank";
+                ml.style.cssText = "font-size:11px;padding:2px 8px;background:#E8F4FF;border-radius:20px;color:#2563EB;text-decoration:none;display:inline-flex;align-items:center;gap:3px";
+                ml.innerHTML = "🗺️ Maps";
+                ml.addEventListener("click", e => e.stopPropagation());
+                linkRow.appendChild(ml);
+              }
+              if (item.data.link) {
+                const ll = document.createElement("a");
+                ll.href = item.data.link;
+                ll.target = "_blank";
+                ll.style.cssText = "font-size:11px;padding:2px 8px;background:var(--surface);border-radius:20px;color:var(--muted);text-decoration:none;display:inline-flex;align-items:center;gap:3px;border:1px solid var(--border)";
+                ll.innerHTML = "🔗 Link";
+                ll.addEventListener("click", e => e.stopPropagation());
+                linkRow.appendChild(ll);
+              }
+              if (item.data.maps || item.data.link) content.appendChild(linkRow);
               // Drag handle (left side)
               const handle = mk("div", "drag-handle");
               handle.innerHTML = '<svg width="10" height="16" viewBox="0 0 10 16"><circle cx="3" cy="3" r="1.5" fill="currentColor"/><circle cx="7" cy="3" r="1.5" fill="currentColor"/><circle cx="3" cy="8" r="1.5" fill="currentColor"/><circle cx="7" cy="8" r="1.5" fill="currentColor"/><circle cx="3" cy="13" r="1.5" fill="currentColor"/><circle cx="7" cy="13" r="1.5" fill="currentColor"/></svg>';
@@ -5685,11 +5714,15 @@ Return ONLY the JSON array, no other text.`;
       // ── EDIT ITINERARY ENTRY ──
       let editingItinerary = null; // { trip, entry }
 
-      function openEditItinerary(trip, entry) {
-        editingItinerary = { trip, entry };
+      function openEditItinerary(trip, entry, isNew) {
+        editingItinerary = { trip, entry, isNew: !!isNew };
+        $('ei-modal-title').textContent = isNew ? 'Add Entry 🗓️' : 'Edit Entry 🗓️';
+        $('btn-delete-itinerary-edit').style.display = isNew ? 'none' : 'block';
         $('ei-day').value = entry.day || '';
         $('ei-location').value = entry.location || '';
         $('ei-note').value = entry.note || '';
+        $('ei-link').value = entry.link || '';
+        $('ei-maps').value = entry.maps || '';
 
         // Populate move-to-day dropdown with all days in itinerary range
         const sel = $('ei-move-day');
@@ -5722,10 +5755,9 @@ Return ONLY the JSON array, no other text.`;
 
       $('btn-save-itinerary-edit').addEventListener('click', () => {
         if (!editingItinerary) return;
-        const { trip, entry } = editingItinerary;
+        const { trip, entry, isNew } = editingItinerary;
         const newDate = $('ei-move-day').value;
         entry.date = newDate;
-        // Auto-update day label from selected date if user hasn't customised it
         if (newDate) {
           const d = new Date(newDate + 'T00:00:00');
           const days2 = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -5737,10 +5769,16 @@ Return ONLY the JSON array, no other text.`;
         }
         entry.location = $('ei-location').value.trim();
         entry.note = $('ei-note').value.trim();
+        entry.link = $('ei-link').value.trim();
+        entry.maps = $('ei-maps').value.trim();
+        if (isNew) {
+          if (!trip.itinerary) trip.itinerary = [];
+          trip.itinerary.push(entry);
+        }
         save();
         closeModals();
         renderTimeline(trip);
-        toast('Entry updated!');
+        toast(isNew ? 'Entry added!' : 'Entry updated!');
         editingItinerary = null;
       });
 
@@ -5754,6 +5792,44 @@ Return ONLY the JSON array, no other text.`;
         renderTimeline(trip);
         toast('Entry deleted');
         editingItinerary = null;
+      });
+
+      // Add new entry manually
+      $('btn-add-itinerary-entry').addEventListener('click', () => {
+        const trip = D.trips[curTrip];
+        if (!trip) { toast('Open a trip first'); return; }
+        // Default to first date in trip, or today
+        let defaultDate = trip.start || new Date().toISOString().slice(0,10);
+        const newEntry = { date: defaultDate, day: '', location: '', note: '', link: '', maps: '' };
+        openEditItinerary(trip, newEntry, true);
+      });
+
+      // Auto-detect map links from link field
+      $('btn-ei-parse-links').addEventListener('click', () => {
+        const raw = $('ei-link').value.trim();
+        if (!raw) { toast('Paste a link first'); return; }
+        const mapPatterns = [
+          /https?:\/\/(maps\.google\.[a-z.]+|goo\.gl\/maps|maps\.app\.goo\.gl)[^\s]*/i,
+          /https?:\/\/maps\.apple\.com[^\s]*/i,
+          /https?:\/\/www\.google\.[a-z.]+\/maps[^\s]*/i,
+        ];
+        let mapUrl = null;
+        let remaining = raw;
+        for (const pat of mapPatterns) {
+          const m = raw.match(pat);
+          if (m) {
+            mapUrl = m[0];
+            remaining = raw.replace(m[0], '').trim().replace(/^[,;|\s]+|[,;|\s]+$/g, '').trim();
+            break;
+          }
+        }
+        if (mapUrl) {
+          $('ei-maps').value = mapUrl;
+          $('ei-link').value = remaining;
+          toast('Map link detected! ✅');
+        } else {
+          toast('No map link found in this URL');
+        }
       });
 
       $('btn-cancel-itinerary-edit').addEventListener('click', () => {
