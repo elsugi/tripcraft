@@ -1923,7 +1923,7 @@
           </div>
           <div class="frow">
             <div><label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label><input class="finput" type="date" id="fl-arr-date"/></div>
-            <div><label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9)</span></label><input class="finput" id="fl-arr-tz" placeholder="+9 or JST"/></div>
+
           </div>
           <label class="flbl">Confirmation #</label>
           <input class="finput" id="fl-conf" placeholder="ABC123" style="margin-bottom:12px"/>
@@ -1940,8 +1940,9 @@
               <div><label class="flbl">Departs</label><input class="finput" id="fl-ret-dep" placeholder="18:00"/></div>
               <div><label class="flbl">Arrives</label><input class="finput" id="fl-ret-arr" placeholder="10:30"/></div>
             </div>
-            <label class="flbl">Arrival Timezone</label>
-            <input class="finput" id="fl-ret-arr-tz" placeholder="e.g. -8 or PST" style="margin-bottom:0"/>
+            <label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label>
+            <input class="finput" type="date" id="fl-ret-arr-date" style="margin-bottom:0"/>
+
           </div>
         </div>
         <div id="flight-paste" style="display: none">
@@ -2054,7 +2055,7 @@
         </div>
         <div class="frow">
           <div><label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label><input class="finput" type="date" id="ef-arr-date"/></div>
-          <div><label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9)</span></label><input class="finput" id="ef-arr-tz" placeholder="e.g. +9 or JST"/></div>
+
         </div>
         <label class="flbl">Confirmation #</label>
         <input class="finput" id="ef-conf" placeholder="ABC123" style="margin-bottom:12px"/>
@@ -3605,8 +3606,7 @@ Return ONLY the JSON object, nothing else.`;
             rb.style.cssText = "font-size:10px;font-weight:600;letter-spacing:0.5px;background:#F0F4FF;color:#3B82F6;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle";
             t1.appendChild(rb);
           }
-          const arrDisplay = f.arr + (f.arrTz ? " (" + f.arrTz + ")" : "");
-          const timePart = f.dep && f.arr ? f.dep + " → " + arrDisplay : "";
+          const timePart = f.dep && f.arr ? f.dep + " → " + f.arr : "";
           const parts2 = [dateStr, f.num || "", timePart].filter(Boolean);
           const det = mk("div", "flight-detail");
           det.textContent = parts2.join(" · ");
@@ -3669,16 +3669,16 @@ Return ONLY a JSON object with these fields:
   "date": "outbound departure date in YYYY-MM-DD format",
   "num": "outbound flight number e.g. JL012",
   "dep": "outbound departure time in HH:MM 24h format",
-  "arr": "outbound arrival time in HH:MM 24h format",
+  "arr": "outbound arrival time in HH:MM 24h format IN THE DESTINATION LOCAL TIME (convert if needed — e.g. if email says arrives 15:20 Tokyo time, use 15:20)",
   "arr_date": "arrival date in YYYY-MM-DD format — only if different from departure date, else empty string",
-  "arr_tz": "arrival timezone offset or code e.g. +9, JST, -8, PST (leave empty if same as departure timezone)",
   "conf": "confirmation or booking reference code",
   "return_date": "return flight departure date in YYYY-MM-DD format (empty if no return)",
   "return_num": "return flight number (empty if no return)",
-  "return_dep": "return departure time HH:MM 24h (empty if no return)",
-  "return_arr": "return arrival time HH:MM 24h (empty if no return)",
-  "return_arr_tz": "return arrival timezone offset or code (empty if no return or same timezone)"
+  "return_dep": "return departure time HH:MM 24h IN LOCAL DEPARTURE TIME (empty if no return)",
+  "return_arr": "return arrival time HH:MM 24h IN LOCAL DESTINATION TIME (empty if no return)",
+  "return_arr_date": "return arrival date YYYY-MM-DD if different from return_date, else empty"
 }
+IMPORTANT: All times must be in LOCAL time at their respective airports — do NOT use UTC or offset notation.
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
           const prev = $("flight-preview");
@@ -3686,12 +3686,12 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           prev._parsed = { ...parsed, _emailText: text };
           let previewHtml = "<b>" + (parsed.from||"?") + " → " + (parsed.to||"?") + "</b><br>" +
             "Date: " + (parsed.date||"?") + " · Flight: " + (parsed.num||"?") + "<br>" +
-            "Dep: " + (parsed.dep||"?") + " · Arr: " + (parsed.arr||"?") + (parsed.arr_tz ? " (" + parsed.arr_tz + ")" : "") + "<br>" +
+            "Dep: " + (parsed.dep||"?") + " · Arr: " + (parsed.arr||"?") + (parsed.arr_date ? " (" + parsed.arr_date + ")" : "") + "<br>" +
             "Conf: " + (parsed.conf||"?");
           if (parsed.return_date) {
             previewHtml += "<br><br><b style='color:var(--muted)'>↩ Return: " + (parsed.to||"?") + " → " + (parsed.from||"?") + "</b><br>" +
               "Date: " + parsed.return_date + " · Flight: " + (parsed.return_num||"?") + "<br>" +
-              "Dep: " + (parsed.return_dep||"?") + " · Arr: " + (parsed.return_arr||"?") + (parsed.return_arr_tz ? " (" + parsed.return_arr_tz + ")" : "");
+              "Dep: " + (parsed.return_dep||"?") + " · Arr: " + (parsed.return_arr||"?") + (parsed.return_arr_date ? " (" + parsed.return_arr_date + ")" : "");
           }
           prev.innerHTML = previewHtml;
           // Populate manual fields
@@ -3702,7 +3702,6 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.dep) $("fl-dep").value = parsed.dep;
           if (parsed.arr) $("fl-arr").value = parsed.arr;
           if (parsed.arr_date) $("fl-arr-date").value = parsed.arr_date;
-          if (parsed.arr_tz) $("fl-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("fl-conf").value = parsed.conf;
           // Show return toggle if return found
           if (parsed.return_date) {
@@ -3712,7 +3711,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
             $("fl-ret-num").value = parsed.return_num || "";
             $("fl-ret-dep").value = parsed.return_dep || "";
             $("fl-ret-arr").value = parsed.return_arr || "";
-            $("fl-ret-arr-tz").value = parsed.return_arr_tz || "";
+            if (parsed.return_arr_date) $("fl-ret-arr-date").value = parsed.return_arr_date;
           }
           toast("✅ Flight parsed!");
         } catch(e) {
@@ -3741,7 +3740,6 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           dep: $("fl-dep").value.trim(),
           arr: $("fl-arr").value.trim(),
           arrDate: $("fl-arr-date").value || undefined,
-          arrTz: $("fl-arr-tz").value.trim(),
           conf: $("fl-conf").value.trim(),
           emailText: emailText || undefined,
         };
@@ -3755,7 +3753,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
             num: $("fl-ret-num").value.trim(),
             dep: $("fl-ret-dep").value.trim(),
             arr: $("fl-ret-arr").value.trim(),
-            arrTz: $("fl-ret-arr-tz").value.trim(),
+            arrDate: $("fl-ret-arr-date").value || undefined,
             conf: f.conf,
             emailText: emailText || undefined,
           };
@@ -3764,8 +3762,8 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         save();
         closeModals();
         renderFlights(t);
-        ["fl-from","fl-to","fl-date","fl-num","fl-dep","fl-arr","fl-arr-date","fl-arr-tz","fl-conf",
-         "fl-ret-date","fl-ret-num","fl-ret-dep","fl-ret-arr","fl-ret-arr-tz"].forEach(id => $(id).value = "");
+        ["fl-from","fl-to","fl-date","fl-num","fl-dep","fl-arr","fl-arr-date","fl-conf",
+         "fl-ret-date","fl-ret-num","fl-ret-dep","fl-ret-arr","fl-ret-arr-date"].forEach(id => $(id).value = "");
         $("fl-has-return").checked = false;
         $("fl-return-fields").style.display = "none";
         $("flight-preview").style.display = "none";
@@ -3982,7 +3980,6 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         $("ef-dep").value = f.dep || "";
         $("ef-arr").value = f.arr || "";
         $("ef-arr-date").value = f.arrDate || "";
-        $("ef-arr-tz").value = f.arrTz || "";
         $("ef-conf").value = f.conf || "";
         $("ef-email").value = "";
         // Show original email if stored
@@ -4006,7 +4003,6 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         f.dep = $("ef-dep").value.trim();
         f.arr = $("ef-arr").value.trim();
         f.arrDate = $("ef-arr-date").value || undefined;
-        f.arrTz = $("ef-arr-tz").value.trim();
         f.conf = $("ef-conf").value.trim();
         save();
         closeModals();
@@ -4033,7 +4029,8 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         btn.disabled = true;
         try {
           const prompt = `Extract the outbound flight booking details from this email and return ONLY a JSON object with these fields:
-{"from":"IATA departure code","to":"IATA destination code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM 24h","arr":"HH:MM 24h","arr_date":"arrival date YYYY-MM-DD only if different from departure date else empty","arr_tz":"arrival timezone e.g. +9 or JST (empty if same as departure)","conf":"confirmation code"}
+{"from":"IATA departure code","to":"IATA destination code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM 24h in local departure airport time","arr":"HH:MM 24h IN LOCAL DESTINATION TIME (convert timezone if needed)","arr_date":"arrival date YYYY-MM-DD only if different from departure date else empty","conf":"confirmation code"}
+All times must be in local time at their respective airports.
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
           if (parsed.from) $("ef-from").value = parsed.from;
@@ -4043,7 +4040,6 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.dep) $("ef-dep").value = parsed.dep;
           if (parsed.arr) $("ef-arr").value = parsed.arr;
           if (parsed.arr_date) $("ef-arr-date").value = parsed.arr_date;
-          if (parsed.arr_tz) $("ef-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("ef-conf").value = parsed.conf;
           // Store email text on flight object immediately
           if (editingFlight) { editingFlight.f.emailText = text; $("ef-original-email").textContent = text; $("ef-original-email-wrap").style.display = "block"; }
