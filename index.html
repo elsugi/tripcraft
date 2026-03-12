@@ -1513,6 +1513,10 @@
         <div id="map-trip"></div>
         <div id="places-list"></div>
       </div>
+      <div class="trip-section" id="tab-tickets">
+        <button class="add-btn" id="btn-add-ticket-trip">+ Add Ticket</button>
+        <div id="tickets-list"></div>
+      </div>
       <div class="trip-section" id="tab-packing">
         <div style="display:flex;gap:8px;margin-bottom:10px">
           <button class="add-btn" id="btn-open-pack-templates" style="flex:1;background:var(--surface);color:var(--ink);border:1.5px solid var(--border)">📋 Templates</button>
@@ -1620,7 +1624,7 @@
         
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plane-icon lucide-plane"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
         
-        Flights
+        Transport
         <div class="nav-dot"></div>
       </button>
       <button class="nav-btn" id="nav-hotels">
@@ -1637,6 +1641,11 @@
       </button>
       <button class="nav-btn" id="nav-pack">
        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-luggage-icon lucide-luggage"><path d="M6 20a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2"/><path d="M8 18V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v14"/><path d="M10 20h4"/><circle cx="16" cy="20" r="2"/><circle cx="8" cy="20" r="2"/></svg>Packing
+        <div class="nav-dot"></div>
+      </button>
+    <button class="nav-btn" id="nav-tickets">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg>
+        Tickets
         <div class="nav-dot"></div>
       </button>
     </nav>
@@ -1923,7 +1932,7 @@
           </div>
           <div class="frow">
             <div><label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label><input class="finput" type="date" id="fl-arr-date"/></div>
-
+            <div><label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9)</span></label><input class="finput" id="fl-arr-tz" placeholder="+9 or JST"/></div>
           </div>
           <label class="flbl">Confirmation #</label>
           <input class="finput" id="fl-conf" placeholder="ABC123" style="margin-bottom:12px"/>
@@ -1940,9 +1949,8 @@
               <div><label class="flbl">Departs</label><input class="finput" id="fl-ret-dep" placeholder="18:00"/></div>
               <div><label class="flbl">Arrives</label><input class="finput" id="fl-ret-arr" placeholder="10:30"/></div>
             </div>
-            <label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label>
-            <input class="finput" type="date" id="fl-ret-arr-date" style="margin-bottom:0"/>
-
+            <label class="flbl">Arrival Timezone</label>
+            <input class="finput" id="fl-ret-arr-tz" placeholder="e.g. -8 or PST" style="margin-bottom:0"/>
           </div>
         </div>
         <div id="flight-paste" style="display: none">
@@ -1992,14 +2000,12 @@
             placeholder="Shinjuku Granbell Hotel"
           />
           <div class="frow">
-            <div>
-              <label class="flbl">Check-in</label
-              ><input class="finput" type="date" id="ht-checkin" />
-            </div>
-            <div>
-              <label class="flbl">Check-out</label
-              ><input class="finput" type="date" id="ht-checkout" />
-            </div>
+            <div><label class="flbl">Check-in Date</label><input class="finput" type="date" id="ht-checkin"/></div>
+            <div><label class="flbl">Check-in Time</label><input class="finput" id="ht-checkin-time" placeholder="15:00"/></div>
+          </div>
+          <div class="frow">
+            <div><label class="flbl">Check-out Date</label><input class="finput" type="date" id="ht-checkout"/></div>
+            <div><label class="flbl">Check-out Time</label><input class="finput" id="ht-checkout-time" placeholder="11:00"/></div>
           </div>
           <label class="flbl">Confirmation #</label>
           <input class="finput" id="ht-conf" placeholder="HTL-998234" />
@@ -2055,7 +2061,7 @@
         </div>
         <div class="frow">
           <div><label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label><input class="finput" type="date" id="ef-arr-date"/></div>
-
+          <div><label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9)</span></label><input class="finput" id="ef-arr-tz" placeholder="e.g. +9 or JST"/></div>
         </div>
         <label class="flbl">Confirmation #</label>
         <input class="finput" id="ef-conf" placeholder="ABC123" style="margin-bottom:12px"/>
@@ -2080,28 +2086,39 @@
       <div class="modal">
         <div class="modal-handle"></div>
         <div class="modal-title" id="transport-modal-title">Add Transport 🚌</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px" id="transport-type-picker">
-          <button class="transport-type-btn active" data-type="Bus" data-emoji="🚌">🚌 Bus</button>
-          <button class="transport-type-btn" data-type="Train" data-emoji="🚆">🚆 Train</button>
-          <button class="transport-type-btn" data-type="Ferry" data-emoji="⛴️">⛴️ Ferry</button>
-          <button class="transport-type-btn" data-type="Taxi" data-emoji="🚕">🚕 Taxi</button>
-          <button class="transport-type-btn" data-type="Car Rental" data-emoji="🚗">🚗 Car</button>
-          <button class="transport-type-btn" data-type="Other" data-emoji="🚐">🚐 Other</button>
+        <div class="ftabs" style="margin-bottom:14px">
+          <button class="ftab active" id="trtab-manual">✏️ Manual</button>
+          <button class="ftab" id="trtab-paste">✉️ Parse Email</button>
         </div>
-        <div class="frow">
-          <div><label class="flbl">From</label><input class="finput" id="tr-from" placeholder="Station / stop"/></div>
-          <div><label class="flbl">To</label><input class="finput" id="tr-to" placeholder="Destination"/></div>
+        <div id="tr-manual-panel">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px" id="transport-type-picker">
+            <button class="transport-type-btn active" data-type="Bus" data-emoji="🚌">🚌 Bus</button>
+            <button class="transport-type-btn" data-type="Train" data-emoji="🚆">🚆 Train</button>
+            <button class="transport-type-btn" data-type="Ferry" data-emoji="⛴️">⛴️ Ferry</button>
+            <button class="transport-type-btn" data-type="Taxi" data-emoji="🚕">🚕 Taxi</button>
+            <button class="transport-type-btn" data-type="Car Rental" data-emoji="🚗">🚗 Car</button>
+            <button class="transport-type-btn" data-type="Other" data-emoji="🚐">🚐 Other</button>
+          </div>
+          <div class="frow">
+            <div><label class="flbl">From</label><input class="finput" id="tr-from" placeholder="Station / stop / terminal"/></div>
+            <div><label class="flbl">To</label><input class="finput" id="tr-to" placeholder="Destination / terminal"/></div>
+          </div>
+          <div class="frow">
+            <div><label class="flbl">Date</label><input class="finput" type="date" id="tr-date"/></div>
+            <div><label class="flbl">Time</label><input class="finput" id="tr-time" placeholder="09:30"/></div>
+          </div>
+          <label class="flbl">Confirmation #</label>
+          <input class="finput" id="tr-conf" placeholder="ABC123"/>
+          <label class="flbl">Booking Link</label>
+          <input class="finput" id="tr-link" placeholder="https://..." type="url"/>
+          <label class="flbl">Notes</label>
+          <textarea class="finput" id="tr-notes" rows="3" placeholder="Gate, platform, terminal, luggage allowance..."></textarea>
         </div>
-        <div class="frow">
-          <div><label class="flbl">Date</label><input class="finput" type="date" id="tr-date"/></div>
-          <div><label class="flbl">Time</label><input class="finput" id="tr-time" placeholder="09:30"/></div>
+        <div id="tr-paste-panel" style="display:none">
+          <textarea class="finput" id="tr-email" rows="7" placeholder="Paste your booking confirmation email here..."></textarea>
+          <button class="btn-primary" id="btn-parse-transport" style="background:var(--ink);margin-bottom:8px">🔍 Parse Email</button>
+          <div id="tr-preview" style="display:none;background:var(--surface);border-radius:var(--rs);padding:12px;margin-bottom:12px;font-size:13px"></div>
         </div>
-        <label class="flbl">Confirmation #</label>
-        <input class="finput" id="tr-conf" placeholder="ABC123"/>
-        <label class="flbl">Booking Link</label>
-        <input class="finput" id="tr-link" placeholder="https://..." type="url"/>
-        <label class="flbl">Notes</label>
-        <textarea class="finput" id="tr-notes" rows="3" placeholder="Gate, platform, luggage allowance..."></textarea>
         <button class="btn-primary" id="btn-save-transport">💾 Save</button>
         <button class="btn-primary" id="btn-delete-transport" style="margin-top:8px;background:#e85555;display:none">🗑️ Delete</button>
       </div>
@@ -2119,14 +2136,12 @@
           <label class="flbl">Hotel Name</label>
           <input class="finput" id="eh-name" placeholder="Hotel name" />
           <div class="frow">
-            <div>
-              <label class="flbl">Check-in</label
-              ><input class="finput" type="date" id="eh-checkin" />
-            </div>
-            <div>
-              <label class="flbl">Check-out</label
-              ><input class="finput" type="date" id="eh-checkout" />
-            </div>
+            <div><label class="flbl">Check-in Date</label><input class="finput" type="date" id="eh-checkin"/></div>
+            <div><label class="flbl">Check-in Time</label><input class="finput" id="eh-checkin-time" placeholder="15:00"/></div>
+          </div>
+          <div class="frow">
+            <div><label class="flbl">Check-out Date</label><input class="finput" type="date" id="eh-checkout"/></div>
+            <div><label class="flbl">Check-out Time</label><input class="finput" id="eh-checkout-time" placeholder="11:00"/></div>
           </div>
           <label class="flbl">Confirmation #</label>
           <input class="finput" id="eh-conf" placeholder="HTL-998234" />
@@ -2427,6 +2442,41 @@
     </div>
 
     <div class="toast" id="toast"></div>
+
+    <!-- MODAL: Add/Edit Ticket -->
+    <div class="overlay" id="modal-ticket">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="ticket-modal-title">Add Ticket 🎟️</div>
+        <div class="ftabs" style="margin-bottom:14px">
+          <button class="ftab active" id="tktab-manual">✏️ Manual</button>
+          <button class="ftab" id="tktab-paste">✉️ Parse Email</button>
+        </div>
+        <div id="tk-manual-panel">
+          <label class="flbl">Event / Attraction</label>
+          <input class="finput" id="tk-name" placeholder="teamLab Planets, Fuji-Q Highlight..."/>
+          <div class="frow">
+            <div><label class="flbl">Date</label><input class="finput" type="date" id="tk-date"/></div>
+            <div><label class="flbl">Time</label><input class="finput" id="tk-time" placeholder="10:00"/></div>
+          </div>
+          <label class="flbl">Venue / Location</label>
+          <input class="finput" id="tk-venue" placeholder="Venue name or address"/>
+          <label class="flbl">Confirmation #</label>
+          <input class="finput" id="tk-conf" placeholder="TKT-12345"/>
+          <label class="flbl">Booking Link</label>
+          <input class="finput" id="tk-link" placeholder="https://..." type="url"/>
+          <label class="flbl">Notes</label>
+          <textarea class="finput" id="tk-notes" rows="2" placeholder="Seat, entry gate, dress code..."></textarea>
+        </div>
+        <div id="tk-paste-panel" style="display:none">
+          <textarea class="finput" id="tk-email" rows="7" placeholder="Paste your ticket confirmation email here..."></textarea>
+          <button class="btn-primary" id="btn-parse-ticket" style="background:var(--ink);margin-bottom:8px">🔍 Parse Email</button>
+          <div id="tk-preview" style="display:none;background:var(--surface);border-radius:var(--rs);padding:12px;margin-bottom:12px;font-size:13px"></div>
+        </div>
+        <button class="btn-primary" id="btn-save-ticket">💾 Save Ticket</button>
+        <button class="btn-primary" id="btn-delete-ticket" style="margin-top:8px;background:#e85555;display:none">🗑️ Delete</button>
+      </div>
+    </div>
 
     <!-- MODAL: Pack Sheets Import -->
     <div class="overlay" id="modal-pack-sheets">
@@ -3366,6 +3416,7 @@ Return ONLY the JSON object, nothing else.`;
           if (tab === "hotels") renderHotels(t);
           if (tab === "flights") { renderFlights(t); renderTransport(t); }
           if (tab === "packing") renderTripPack(t);
+          if (tab === "tickets") renderTickets(t);
         }
       }
 
@@ -3522,8 +3573,80 @@ Return ONLY the JSON object, nothing else.`;
         $("tr-conf").value = entry?.conf || "";
         $("tr-link").value = entry?.link || "";
         $("tr-notes").value = entry?.notes || "";
+        $("tr-email").value = "";
+        $("tr-preview").style.display = "none";
+        act("trtab-manual","trtab-paste");
+        $("tr-manual-panel").style.display = "block";
+        $("tr-paste-panel").style.display = "none";
         openModal("modal-transport");
       }
+
+      // Transport modal tabs
+      $("trtab-manual").addEventListener("click", () => {
+        act("trtab-manual","trtab-paste");
+        $("tr-manual-panel").style.display = "block";
+        $("tr-paste-panel").style.display = "none";
+      });
+      $("trtab-paste").addEventListener("click", () => {
+        act("trtab-paste","trtab-manual");
+        $("tr-paste-panel").style.display = "block";
+        $("tr-manual-panel").style.display = "none";
+      });
+
+      // Transport Gemini parse
+      $("btn-parse-transport").addEventListener("click", async () => {
+        const text = $("tr-email").value.trim();
+        if (!text) { toast("Paste your booking email first"); return; }
+        const btn = $("btn-parse-transport");
+        btn.textContent = "⏳ Parsing...";
+        btn.disabled = true;
+        try {
+          const prompt = `Extract transport/ground booking details from this email and return ONLY a JSON object:
+{
+  "type": "one of: Bus, Train, Ferry, Taxi, Car Rental, Other",
+  "from": "departure location — include terminal, port name, or station (e.g. 'Osaka Station', 'Port of Kobe Ferry Terminal')",
+  "to": "arrival location — include terminal, port name, or station",
+  "date": "departure date YYYY-MM-DD",
+  "time": "departure time HH:MM 24h",
+  "conf": "booking or confirmation reference code",
+  "link": "booking URL if present, else empty",
+  "notes": "any useful details: terminal, platform, gate, luggage rules, pickup instructions (keep concise)"
+}
+Be specific about terminals and ports — include the full port/terminal name in from/to fields.
+If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
+          const parsed = await geminiParse(prompt, text);
+          // Populate fields
+          if (parsed.type) {
+            document.querySelectorAll(".transport-type-btn").forEach(b => {
+              b.classList.toggle("active", b.dataset.type === parsed.type);
+            });
+          }
+          if (parsed.from) $("tr-from").value = parsed.from;
+          if (parsed.to) $("tr-to").value = parsed.to;
+          if (parsed.date) $("tr-date").value = parsed.date;
+          if (parsed.time) $("tr-time").value = parsed.time;
+          if (parsed.conf) $("tr-conf").value = parsed.conf;
+          if (parsed.link) $("tr-link").value = parsed.link;
+          if (parsed.notes) $("tr-notes").value = parsed.notes;
+          // Show preview
+          const prev = $("tr-preview");
+          prev.style.display = "block";
+          prev.innerHTML = "<b>" + (parsed.from||"?") + " → " + (parsed.to||"?") + "</b><br>" +
+            (parsed.type ? parsed.type + " · " : "") + (parsed.date||"") + (parsed.time ? " at " + parsed.time : "") + "<br>" +
+            (parsed.conf ? "Conf: <b>" + parsed.conf + "</b><br>" : "") +
+            (parsed.notes ? "<span style='color:var(--muted)'>" + parsed.notes + "</span>" : "");
+          // Switch to manual to review
+          act("trtab-manual","trtab-paste");
+          $("tr-manual-panel").style.display = "block";
+          $("tr-paste-panel").style.display = "none";
+          toast("✅ Transport parsed!");
+        } catch(e) {
+          toast("Parse failed: " + e.message);
+        } finally {
+          btn.textContent = "🔍 Parse Email";
+          btn.disabled = false;
+        }
+      });
 
       // Type picker toggle
       document.querySelectorAll(".transport-type-btn").forEach(btn => {
@@ -3606,7 +3729,8 @@ Return ONLY the JSON object, nothing else.`;
             rb.style.cssText = "font-size:10px;font-weight:600;letter-spacing:0.5px;background:#F0F4FF;color:#3B82F6;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle";
             t1.appendChild(rb);
           }
-          const timePart = f.dep && f.arr ? f.dep + " → " + f.arr : "";
+          const arrDisplay = f.arr + (f.arrTz ? " (" + f.arrTz + ")" : "");
+          const timePart = f.dep && f.arr ? f.dep + " → " + arrDisplay : "";
           const parts2 = [dateStr, f.num || "", timePart].filter(Boolean);
           const det = mk("div", "flight-detail");
           det.textContent = parts2.join(" · ");
@@ -3669,16 +3793,16 @@ Return ONLY a JSON object with these fields:
   "date": "outbound departure date in YYYY-MM-DD format",
   "num": "outbound flight number e.g. JL012",
   "dep": "outbound departure time in HH:MM 24h format",
-  "arr": "outbound arrival time in HH:MM 24h format IN THE DESTINATION LOCAL TIME (convert if needed — e.g. if email says arrives 15:20 Tokyo time, use 15:20)",
+  "arr": "outbound arrival time in HH:MM 24h format",
   "arr_date": "arrival date in YYYY-MM-DD format — only if different from departure date, else empty string",
+  "arr_tz": "arrival timezone offset or code e.g. +9, JST, -8, PST (leave empty if same as departure timezone)",
   "conf": "confirmation or booking reference code",
   "return_date": "return flight departure date in YYYY-MM-DD format (empty if no return)",
   "return_num": "return flight number (empty if no return)",
-  "return_dep": "return departure time HH:MM 24h IN LOCAL DEPARTURE TIME (empty if no return)",
-  "return_arr": "return arrival time HH:MM 24h IN LOCAL DESTINATION TIME (empty if no return)",
-  "return_arr_date": "return arrival date YYYY-MM-DD if different from return_date, else empty"
+  "return_dep": "return departure time HH:MM 24h (empty if no return)",
+  "return_arr": "return arrival time HH:MM 24h (empty if no return)",
+  "return_arr_tz": "return arrival timezone offset or code (empty if no return or same timezone)"
 }
-IMPORTANT: All times must be in LOCAL time at their respective airports — do NOT use UTC or offset notation.
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
           const prev = $("flight-preview");
@@ -3686,12 +3810,12 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           prev._parsed = { ...parsed, _emailText: text };
           let previewHtml = "<b>" + (parsed.from||"?") + " → " + (parsed.to||"?") + "</b><br>" +
             "Date: " + (parsed.date||"?") + " · Flight: " + (parsed.num||"?") + "<br>" +
-            "Dep: " + (parsed.dep||"?") + " · Arr: " + (parsed.arr||"?") + (parsed.arr_date ? " (" + parsed.arr_date + ")" : "") + "<br>" +
+            "Dep: " + (parsed.dep||"?") + " · Arr: " + (parsed.arr||"?") + (parsed.arr_tz ? " (" + parsed.arr_tz + ")" : "") + "<br>" +
             "Conf: " + (parsed.conf||"?");
           if (parsed.return_date) {
             previewHtml += "<br><br><b style='color:var(--muted)'>↩ Return: " + (parsed.to||"?") + " → " + (parsed.from||"?") + "</b><br>" +
               "Date: " + parsed.return_date + " · Flight: " + (parsed.return_num||"?") + "<br>" +
-              "Dep: " + (parsed.return_dep||"?") + " · Arr: " + (parsed.return_arr||"?") + (parsed.return_arr_date ? " (" + parsed.return_arr_date + ")" : "");
+              "Dep: " + (parsed.return_dep||"?") + " · Arr: " + (parsed.return_arr||"?") + (parsed.return_arr_tz ? " (" + parsed.return_arr_tz + ")" : "");
           }
           prev.innerHTML = previewHtml;
           // Populate manual fields
@@ -3702,6 +3826,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.dep) $("fl-dep").value = parsed.dep;
           if (parsed.arr) $("fl-arr").value = parsed.arr;
           if (parsed.arr_date) $("fl-arr-date").value = parsed.arr_date;
+          if (parsed.arr_tz) $("fl-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("fl-conf").value = parsed.conf;
           // Show return toggle if return found
           if (parsed.return_date) {
@@ -3711,7 +3836,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
             $("fl-ret-num").value = parsed.return_num || "";
             $("fl-ret-dep").value = parsed.return_dep || "";
             $("fl-ret-arr").value = parsed.return_arr || "";
-            if (parsed.return_arr_date) $("fl-ret-arr-date").value = parsed.return_arr_date;
+            $("fl-ret-arr-tz").value = parsed.return_arr_tz || "";
           }
           toast("✅ Flight parsed!");
         } catch(e) {
@@ -3740,6 +3865,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           dep: $("fl-dep").value.trim(),
           arr: $("fl-arr").value.trim(),
           arrDate: $("fl-arr-date").value || undefined,
+          arrTz: $("fl-arr-tz").value.trim(),
           conf: $("fl-conf").value.trim(),
           emailText: emailText || undefined,
         };
@@ -3753,7 +3879,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
             num: $("fl-ret-num").value.trim(),
             dep: $("fl-ret-dep").value.trim(),
             arr: $("fl-ret-arr").value.trim(),
-            arrDate: $("fl-ret-arr-date").value || undefined,
+            arrTz: $("fl-ret-arr-tz").value.trim(),
             conf: f.conf,
             emailText: emailText || undefined,
           };
@@ -3762,8 +3888,8 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         save();
         closeModals();
         renderFlights(t);
-        ["fl-from","fl-to","fl-date","fl-num","fl-dep","fl-arr","fl-arr-date","fl-conf",
-         "fl-ret-date","fl-ret-num","fl-ret-dep","fl-ret-arr","fl-ret-arr-date"].forEach(id => $(id).value = "");
+        ["fl-from","fl-to","fl-date","fl-num","fl-dep","fl-arr","fl-arr-date","fl-arr-tz","fl-conf",
+         "fl-ret-date","fl-ret-num","fl-ret-dep","fl-ret-arr","fl-ret-arr-tz"].forEach(id => $(id).value = "");
         $("fl-has-return").checked = false;
         $("fl-return-fields").style.display = "none";
         $("flight-preview").style.display = "none";
@@ -3802,9 +3928,9 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           const t2 = mk("div", "hotel-name");
           t2.textContent = h.name;
           const t3 = mk("div", "hotel-dates");
-          t3.textContent = "Check-in: " + ci;
+          t3.textContent = "Check-in: " + ci + (h.checkinTime ? " · " + h.checkinTime : "");
           const t4 = mk("div", "hotel-dates");
-          t4.textContent = "Check-out: " + co;
+          t4.textContent = "Check-out: " + co + (h.checkoutTime ? " · " + h.checkoutTime : "");
           card.append(t1, t2, t3, t4);
           if (h.conf) {
             const d = mk("div", "hotel-dates");
@@ -3876,7 +4002,9 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         t.hotels.push({
           name,
           checkin: $("ht-checkin").value,
+          checkinTime: $("ht-checkin-time").value.trim(),
           checkout: $("ht-checkout").value,
+          checkoutTime: $("ht-checkout-time").value.trim(),
           conf: $("ht-conf").value.trim(),
           addr: $("ht-addr").value.trim(),
         });
@@ -3884,8 +4012,8 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         closeModals();
         [
           "ht-name",
-          "ht-checkin",
-          "ht-checkout",
+          "ht-checkin","ht-checkin-time",
+          "ht-checkout","ht-checkout-time",
           "ht-conf",
           "ht-addr",
           "ht-email",
@@ -3905,8 +4033,8 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         $("hotel-preview").style.display = "none";
         [
           "ht-name",
-          "ht-checkin",
-          "ht-checkout",
+          "ht-checkin","ht-checkin-time",
+          "ht-checkout","ht-checkout-time",
           "ht-conf",
           "ht-addr",
           "ht-email",
@@ -3938,9 +4066,11 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
 {
   "name": "hotel name",
   "checkin": "check-in date in YYYY-MM-DD format",
+  "checkin_time": "check-in time in HH:MM 24h format (e.g. 15:00), empty if not found",
   "checkout": "check-out date in YYYY-MM-DD format",
+  "checkout_time": "check-out time in HH:MM 24h format (e.g. 11:00), empty if not found",
   "conf": "confirmation or booking reference code",
-  "addr": "hotel address"
+  "addr": "hotel address or full location"
 }
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
@@ -3957,7 +4087,9 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           $("hotel-paste").style.display = "none";
           if (parsed.name) $("ht-name").value = parsed.name;
           if (parsed.checkin) $("ht-checkin").value = parsed.checkin;
+          if (parsed.checkin_time) $("ht-checkin-time").value = parsed.checkin_time;
           if (parsed.checkout) $("ht-checkout").value = parsed.checkout;
+          if (parsed.checkout_time) $("ht-checkout-time").value = parsed.checkout_time;
           if (parsed.conf) $("ht-conf").value = parsed.conf;
           if (parsed.addr) $("ht-addr").value = parsed.addr;
           toast("✅ Hotel parsed!");
@@ -3980,6 +4112,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         $("ef-dep").value = f.dep || "";
         $("ef-arr").value = f.arr || "";
         $("ef-arr-date").value = f.arrDate || "";
+        $("ef-arr-tz").value = f.arrTz || "";
         $("ef-conf").value = f.conf || "";
         $("ef-email").value = "";
         // Show original email if stored
@@ -4003,6 +4136,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         f.dep = $("ef-dep").value.trim();
         f.arr = $("ef-arr").value.trim();
         f.arrDate = $("ef-arr-date").value || undefined;
+        f.arrTz = $("ef-arr-tz").value.trim();
         f.conf = $("ef-conf").value.trim();
         save();
         closeModals();
@@ -4029,8 +4163,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         btn.disabled = true;
         try {
           const prompt = `Extract the outbound flight booking details from this email and return ONLY a JSON object with these fields:
-{"from":"IATA departure code","to":"IATA destination code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM 24h in local departure airport time","arr":"HH:MM 24h IN LOCAL DESTINATION TIME (convert timezone if needed)","arr_date":"arrival date YYYY-MM-DD only if different from departure date else empty","conf":"confirmation code"}
-All times must be in local time at their respective airports.
+{"from":"IATA departure code","to":"IATA destination code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM 24h","arr":"HH:MM 24h","arr_date":"arrival date YYYY-MM-DD only if different from departure date else empty","arr_tz":"arrival timezone e.g. +9 or JST (empty if same as departure)","conf":"confirmation code"}
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
           if (parsed.from) $("ef-from").value = parsed.from;
@@ -4040,6 +4173,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.dep) $("ef-dep").value = parsed.dep;
           if (parsed.arr) $("ef-arr").value = parsed.arr;
           if (parsed.arr_date) $("ef-arr-date").value = parsed.arr_date;
+          if (parsed.arr_tz) $("ef-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("ef-conf").value = parsed.conf;
           // Store email text on flight object immediately
           if (editingFlight) { editingFlight.f.emailText = text; $("ef-original-email").textContent = text; $("ef-original-email-wrap").style.display = "block"; }
@@ -4058,7 +4192,9 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         editingHotel = { trip, h };
         $("eh-name").value = h.name || "";
         $("eh-checkin").value = h.checkin || "";
+        $("eh-checkin-time").value = h.checkinTime || "";
         $("eh-checkout").value = h.checkout || "";
+        $("eh-checkout-time").value = h.checkoutTime || "";
         $("eh-conf").value = h.conf || "";
         $("eh-addr").value = h.addr || "";
         // Reset to details tab
@@ -4125,7 +4261,9 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         const { trip, h } = editingHotel;
         h.name = $("eh-name").value.trim() || h.name;
         h.checkin = $("eh-checkin").value;
+        h.checkinTime = $("eh-checkin-time").value.trim();
         h.checkout = $("eh-checkout").value;
+        h.checkoutTime = $("eh-checkout-time").value.trim();
         h.conf = $("eh-conf").value.trim();
         h.addr = $("eh-addr").value.trim();
         save();
@@ -4449,6 +4587,16 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
             if (it.date === ds)
               items.push({ type: "itinerary", time: "", data: it });
           });
+          // Ground transport
+          (trip.transport || []).forEach((tr) => {
+            if (tr.date === ds)
+              items.push({ type: "transport", time: tr.time || "", data: tr });
+          });
+          // Flight arrivals (if arrival date differs from departure)
+          trip.flights.forEach((f) => {
+            if (f.arrDate && f.arrDate === ds && f.date !== ds)
+              items.push({ type: "flight_arr", time: f.arr || "", data: f });
+          });
           if (!items.length) continue;
           hasAny = true;
           items.sort((a, b) =>
@@ -4645,6 +4793,74 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
               handle.addEventListener("touchend", e => { const t=e.changedTouches[0]; itEndD(t.clientX,t.clientY); });
               dz.appendChild(itWrap);
               return;
+            }
+            if (item.type === "transport") {
+              const tEmoji = getTransportEmoji ? getTransportEmoji(item.data.type) : "🚌";
+              icon.textContent = tEmoji;
+              icon.style.background = "#FFF8E7";
+              const tag = mk("span", "tl-tag");
+              tag.textContent = (item.data.type || "TRANSPORT").toUpperCase();
+              tag.style.cssText = "background:#FFF8E7;color:#B45309";
+              content.innerHTML = '<div class="tl-title">' + (item.data.from || "?") + " → " + (item.data.to || "?") + "</div>";
+              if (item.data.time) {
+                const s = mk("div", "tl-sub"); s.textContent = item.data.time; content.appendChild(s);
+              }
+              if (item.data.notes) {
+                const s = mk("div", "tl-sub"); s.textContent = item.data.notes; content.appendChild(s);
+              }
+              content.appendChild(tag);
+              if (item.data.link) {
+                const lr = mk("div"); lr.style.cssText = "margin-top:4px";
+                const la = mk("a"); la.href = item.data.link; la.target = "_blank"; la.rel = "noopener";
+                la.style.cssText = "font-size:11px;padding:2px 8px;background:#EEF2FF;border-radius:20px;color:#4F46E5;text-decoration:none";
+                la.innerHTML = "🔗 Booking"; la.addEventListener("click", e => e.stopPropagation());
+                lr.appendChild(la); content.appendChild(lr);
+              }
+            } else if (item.type === "flight_arr") {
+              icon.textContent = "🛬";
+              icon.style.background = "#FFF0F0";
+              const tag = mk("span", "tl-tag");
+              tag.textContent = "ARRIVES";
+              tag.style.cssText = "background:#FFF0F0;color:#E85555";
+              content.innerHTML = '<div class="tl-title">' + item.data.from + " → " + item.data.to + "</div>";
+              const sub = mk("div", "tl-sub");
+              sub.textContent = (item.data.num ? item.data.num + " · " : "") + (item.data.arr ? "Arr " + item.data.arr : "");
+              content.append(sub, tag);
+            } else {
+              // Add maps link to place cards if they have coords or a maps link
+              if (item.type === "place" && (item.data.lat || item.data.maps)) {
+                const lr = mk("div"); lr.style.cssText = "margin-top:4px";
+                const la = mk("a");
+                la.href = item.data.maps || ("https://maps.google.com/?q=" + encodeURIComponent(item.data.name + (item.data.area ? ", " + item.data.area : "")));
+                la.target = "_blank"; la.rel = "noopener";
+                la.style.cssText = "font-size:11px;padding:2px 8px;background:#E8F4FF;border-radius:20px;color:#2563EB;text-decoration:none";
+                la.innerHTML = "🗺️ Maps"; la.addEventListener("click", e => e.stopPropagation());
+                lr.appendChild(la); content.appendChild(lr);
+              }
+              // Add maps link to hotel cards
+              if ((item.type === "checkin" || item.type === "checkout") && item.data.addr) {
+                const ci_time = item.type === "checkin" ? item.data.checkinTime : item.data.checkoutTime;
+                if (ci_time) {
+                  const s = mk("div", "tl-sub"); s.textContent = (item.type === "checkin" ? "Check-in" : "Check-out") + ": " + ci_time; content.appendChild(s);
+                }
+                const lr = mk("div"); lr.style.cssText = "margin-top:4px";
+                const la = mk("a");
+                la.href = "https://maps.google.com/?q=" + encodeURIComponent(item.data.name + " " + item.data.addr);
+                la.target = "_blank"; la.rel = "noopener";
+                la.style.cssText = "font-size:11px;padding:2px 8px;background:#E8F4FF;border-radius:20px;color:#2563EB;text-decoration:none";
+                la.innerHTML = "🗺️ Maps"; la.addEventListener("click", e => e.stopPropagation());
+                lr.appendChild(la); content.appendChild(lr);
+              }
+              // Add maps link to flight cards (airport)
+              if (item.type === "flight") {
+                const lr = mk("div"); lr.style.cssText = "margin-top:4px";
+                const la = mk("a");
+                la.href = "https://maps.google.com/?q=" + encodeURIComponent(item.data.from + " airport");
+                la.target = "_blank"; la.rel = "noopener";
+                la.style.cssText = "font-size:11px;padding:2px 8px;background:#E8F4FF;border-radius:20px;color:#2563EB;text-decoration:none";
+                la.innerHTML = "🗺️ Airport"; la.addEventListener("click", e => e.stopPropagation());
+                lr.appendChild(la); content.appendChild(lr);
+              }
             }
             row.append(icon, content);
             dz.appendChild(row);
@@ -5750,6 +5966,14 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           toast("Open a trip first!");
         }
       });
+      $("nav-tickets").addEventListener("click", () => {
+        if (D.trips[curTrip]) {
+          showTab("tickets");
+          showScreen("screen-trip", "nav-tickets");
+        } else {
+          toast("Open a trip first!");
+        }
+      });
       // ── TRIPS CAROUSEL ──
       (function() {
         const scroll = $("trips-list");
@@ -6414,6 +6638,164 @@ Return ONLY the JSON array, no other text.`;
         const show = inp.type === "password";
         inp.type = show ? "text" : "password";
         $("settings-key-toggle").textContent = show ? "🙈" : "👁";
+      });
+
+
+      // ── TICKETS ──
+      let editingTicket = null;
+
+      function renderTickets(trip) {
+        const el = $("tickets-list");
+        el.innerHTML = "";
+        const list = trip.tickets || [];
+        if (!list.length) {
+          el.innerHTML = '<div class="empty-state"><div class="empty-icon">🎟️</div><div class="empty-text">No tickets yet</div></div>';
+          return;
+        }
+        list.forEach((tk) => {
+          const card = mk("div", "booking-card");
+          const t1 = mk("div", "booking-type"); t1.textContent = "🎟️ Ticket";
+          const t2 = mk("div", "hotel-name"); t2.textContent = tk.name || "Event";
+          card.append(t1, t2);
+          const parts = [];
+          if (tk.date) parts.push(fmtFull(new Date(tk.date + "T12:00:00")));
+          if (tk.time) parts.push(tk.time);
+          if (parts.length) { const d = mk("div", "hotel-dates"); d.textContent = parts.join(" · "); card.appendChild(d); }
+          if (tk.venue) { const d = mk("div", "hotel-dates"); d.textContent = "📍 " + tk.venue; card.appendChild(d); }
+          if (tk.conf) { const d = mk("div", "hotel-dates"); d.innerHTML = 'Conf: <span class="conf-num">' + tk.conf + "</span>"; card.appendChild(d); }
+          if (tk.notes) { const d = mk("div", "flight-detail"); d.textContent = tk.notes; card.appendChild(d); }
+          if (tk.link) {
+            const lr = mk("div"); lr.style.marginTop = "6px";
+            const la = mk("a"); la.href = tk.link; la.target = "_blank"; la.rel = "noopener";
+            la.style.cssText = "font-size:11px;padding:2px 8px;background:#EEF2FF;border-radius:20px;color:#4F46E5;text-decoration:none";
+            la.innerHTML = "🔗 Booking"; la.addEventListener("click", e => e.stopPropagation());
+            lr.appendChild(la); card.appendChild(lr);
+          }
+          const doDelete = () => slideRemove(wrap, () => {
+            const i = (trip.tickets || []).indexOf(tk);
+            if (i > -1) trip.tickets.splice(i, 1);
+            save();
+          });
+          const editBtn = mk("button");
+          editBtn.style.cssText = "position:absolute;top:12px;right:44px;padding:5px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent";
+          editBtn.textContent = "✏️";
+          editBtn.addEventListener("click", e => { e.stopPropagation(); openEditTicket(trip, tk); });
+          card.appendChild(editBtn);
+          card.appendChild(makeDelBtn(doDelete));
+          card.style.cursor = "pointer";
+          card.addEventListener("click", () => openEditTicket(trip, tk));
+          const wrap = makeSwipeRow(card, doDelete);
+          el.appendChild(wrap);
+        });
+      }
+
+      function openEditTicket(trip, tk) {
+        const isNew = !tk;
+        editingTicket = { trip, tk: tk || null };
+        $("ticket-modal-title").textContent = isNew ? "Add Ticket 🎟️" : "Edit Ticket ✏️";
+        $("btn-delete-ticket").style.display = isNew ? "none" : "block";
+        $("tk-name").value = tk?.name || "";
+        $("tk-date").value = tk?.date || "";
+        $("tk-time").value = tk?.time || "";
+        $("tk-venue").value = tk?.venue || "";
+        $("tk-conf").value = tk?.conf || "";
+        $("tk-link").value = tk?.link || "";
+        $("tk-notes").value = tk?.notes || "";
+        $("tk-email").value = "";
+        $("tk-preview").style.display = "none";
+        act("tktab-manual","tktab-paste");
+        $("tk-manual-panel").style.display = "block";
+        $("tk-paste-panel").style.display = "none";
+        openModal("modal-ticket");
+      }
+
+      $("tktab-manual").addEventListener("click", () => {
+        act("tktab-manual","tktab-paste");
+        $("tk-manual-panel").style.display = "block";
+        $("tk-paste-panel").style.display = "none";
+      });
+      $("tktab-paste").addEventListener("click", () => {
+        act("tktab-paste","tktab-manual");
+        $("tk-paste-panel").style.display = "block";
+        $("tk-manual-panel").style.display = "none";
+      });
+
+      $("btn-parse-ticket").addEventListener("click", async () => {
+        const text = $("tk-email").value.trim();
+        if (!text) { toast("Paste your ticket email first"); return; }
+        const btn = $("btn-parse-ticket");
+        btn.textContent = "⏳ Parsing...";
+        btn.disabled = true;
+        try {
+          const prompt = `Extract event/attraction ticket details from this confirmation email and return ONLY a JSON object:
+{
+  "name": "event or attraction name",
+  "date": "date in YYYY-MM-DD format",
+  "time": "event start time HH:MM 24h",
+  "venue": "full venue name and address",
+  "conf": "confirmation or booking reference code",
+  "link": "booking or ticket URL if present, else empty",
+  "notes": "useful details: seat, entry gate, dress code, restrictions (concise)"
+}
+If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
+          const parsed = await geminiParse(prompt, text);
+          if (parsed.name) $("tk-name").value = parsed.name;
+          if (parsed.date) $("tk-date").value = parsed.date;
+          if (parsed.time) $("tk-time").value = parsed.time;
+          if (parsed.venue) $("tk-venue").value = parsed.venue;
+          if (parsed.conf) $("tk-conf").value = parsed.conf;
+          if (parsed.link) $("tk-link").value = parsed.link;
+          if (parsed.notes) $("tk-notes").value = parsed.notes;
+          const prev = $("tk-preview");
+          prev.style.display = "block";
+          prev.innerHTML = "<b>" + (parsed.name||"Event") + "</b><br>" +
+            (parsed.date ? parsed.date + (parsed.time ? " · " + parsed.time : "") + "<br>" : "") +
+            (parsed.venue ? "📍 " + parsed.venue + "<br>" : "") +
+            (parsed.conf ? "Conf: <b>" + parsed.conf + "</b>" : "");
+          act("tktab-manual","tktab-paste");
+          $("tk-manual-panel").style.display = "block";
+          $("tk-paste-panel").style.display = "none";
+          toast("✅ Ticket parsed!");
+        } catch(e) {
+          toast("Parse failed: " + e.message);
+        } finally {
+          btn.textContent = "🔍 Parse Email";
+          btn.disabled = false;
+        }
+      });
+
+      $("btn-save-ticket").addEventListener("click", () => {
+        const { trip, tk } = editingTicket || {};
+        if (!trip) return;
+        const data = {
+          name: $("tk-name").value.trim(),
+          date: $("tk-date").value,
+          time: $("tk-time").value.trim(),
+          venue: $("tk-venue").value.trim(),
+          conf: $("tk-conf").value.trim(),
+          link: $("tk-link").value.trim(),
+          notes: $("tk-notes").value.trim(),
+        };
+        if (!data.name) { toast("Add an event name"); return; }
+        if (!trip.tickets) trip.tickets = [];
+        if (tk) { Object.assign(tk, data); } else { trip.tickets.push(data); }
+        save(); closeModals(); renderTickets(trip);
+        toast((tk ? "Ticket updated" : "Ticket added") + "! 🎟️");
+      });
+
+      $("btn-delete-ticket").addEventListener("click", () => {
+        const { trip, tk } = editingTicket || {};
+        if (!trip || !tk) return;
+        const i = (trip.tickets || []).indexOf(tk);
+        if (i > -1) trip.tickets.splice(i, 1);
+        save(); closeModals(); renderTickets(trip);
+        toast("Ticket removed");
+      });
+
+      $("btn-add-ticket-trip").addEventListener("click", () => {
+        const t = D.trips[curTrip];
+        if (!t) return;
+        openEditTicket(t, null);
       });
 
     </script>
