@@ -614,6 +614,40 @@
         color: var(--muted);
         margin-top: 2px;
       }
+      .transport-type-btn {
+        padding: 6px 12px;
+        font-size: 13px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: var(--surface);
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 0.15s, border-color 0.15s;
+      }
+      .transport-type-btn.active {
+        background: var(--ink);
+        color: #fff;
+        border-color: var(--ink);
+      }
+      .transport-card-type {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        color: var(--muted);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .transport-route {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 4px 0;
+      }
+      .transport-notes {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+        white-space: pre-wrap;
+      }
       .place-drop-zone {
         min-height: 8px;
         border-radius: var(--rs);
@@ -853,6 +887,19 @@
       .pack-item-name {
         font-size: 14px;
         flex: 1;
+        cursor: text;
+      }
+      .pack-item-name-input {
+        font-size: 14px;
+        flex: 1;
+        border: none;
+        border-bottom: 1.5px solid var(--sky, #4ecdc4);
+        outline: none;
+        background: transparent;
+        padding: 0;
+        font-family: inherit;
+        color: var(--ink);
+        min-width: 0;
       }
       .pack-copy-btn {
         width: 32px;
@@ -1290,7 +1337,7 @@
         >
         </div>
         <div class="hdr-sub">Plan, pack, and go — even offline</div>
-        <button id="btn-open-settings" onclick="openModal('modal-settings')" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">⚙️</button>
+        <button id="btn-open-settings" onclick="openModal('modal-settings')" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent">🔑</button>
       </div>
       <button class="install-banner" id="install-banner" style="display: none">
         <div style="font-size: 28px">📲</div>
@@ -1439,6 +1486,13 @@
       <div class="trip-section" id="tab-flights">
         <button class="add-btn" id="btn-add-flight-trip">+ Add Flight</button>
         <div id="flights-list"></div>
+        <div style="margin-top:24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:11px;font-weight:600;letter-spacing:0.5px;color:var(--muted);text-transform:uppercase">Ground Transport</div>
+            <button class="add-btn" id="btn-add-transport-trip" style="margin:0;padding:6px 14px;font-size:12px">+ Add</button>
+          </div>
+          <div id="transport-list"></div>
+        </div>
       </div>
       <div class="trip-section" id="tab-hotels">
         <button class="add-btn" id="btn-add-hotel-trip">+ Add Hotel</button>
@@ -1592,7 +1646,7 @@
     <div class="overlay" id="modal-settings">
       <div class="modal">
         <div class="modal-handle"></div>
-        <div class="modal-title">🔑 Settings</div>
+        <div class="modal-title">⚙️ Settings</div>
         <label class="flbl">Gemini API Key</label>
         <p style="font-size:12px;color:var(--muted);margin:0 0 10px">Used for AI email parsing. Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--sky)">aistudio.google.com</a>. Stored only on this device.</p>
         <div style="display:flex;gap:8px;margin-bottom:8px">
@@ -1867,8 +1921,10 @@
             <div><label class="flbl">Departs</label><input class="finput" id="fl-dep" placeholder="11:30"/></div>
             <div><label class="flbl">Arrives</label><input class="finput" id="fl-arr" placeholder="14:20"/></div>
           </div>
-          <label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9, -5, UTC)</span></label>
-          <input class="finput" id="fl-arr-tz" placeholder="e.g. +9 or JST" style="margin-bottom:12px"/>
+          <div class="frow">
+            <div><label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label><input class="finput" type="date" id="fl-arr-date"/></div>
+            <div><label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9)</span></label><input class="finput" id="fl-arr-tz" placeholder="+9 or JST"/></div>
+          </div>
           <label class="flbl">Confirmation #</label>
           <input class="finput" id="fl-conf" placeholder="ABC123" style="margin-bottom:12px"/>
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:8px">
@@ -1996,8 +2052,10 @@
           <div><label class="flbl">Departure</label><input class="finput" id="ef-dep" placeholder="10:30"/></div>
           <div><label class="flbl">Arrival</label><input class="finput" id="ef-arr" placeholder="14:45"/></div>
         </div>
-        <label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9, -5, UTC)</span></label>
-        <input class="finput" id="ef-arr-tz" placeholder="e.g. +9 or JST" style="margin-bottom:12px"/>
+        <div class="frow">
+          <div><label class="flbl">Arrival Date <span style="font-weight:400;color:var(--muted)">(if different)</span></label><input class="finput" type="date" id="ef-arr-date"/></div>
+          <div><label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9)</span></label><input class="finput" id="ef-arr-tz" placeholder="e.g. +9 or JST"/></div>
+        </div>
         <label class="flbl">Confirmation #</label>
         <input class="finput" id="ef-conf" placeholder="ABC123" style="margin-bottom:12px"/>
         <div id="ef-original-email-wrap" style="display:none;margin-bottom:12px">
@@ -2013,6 +2071,38 @@
         </details>
         <button class="btn-primary" id="btn-do-editflight">Save Changes</button>
         <button class="btn-primary" id="btn-delete-editflight" style="margin-top:8px;background:#e85555">🗑️ Delete Flight</button>
+      </div>
+    </div>
+
+    <!-- MODAL: Add/Edit Transport -->
+    <div class="overlay" id="modal-transport">
+      <div class="modal">
+        <div class="modal-handle"></div>
+        <div class="modal-title" id="transport-modal-title">Add Transport 🚌</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px" id="transport-type-picker">
+          <button class="transport-type-btn active" data-type="Bus" data-emoji="🚌">🚌 Bus</button>
+          <button class="transport-type-btn" data-type="Train" data-emoji="🚆">🚆 Train</button>
+          <button class="transport-type-btn" data-type="Ferry" data-emoji="⛴️">⛴️ Ferry</button>
+          <button class="transport-type-btn" data-type="Taxi" data-emoji="🚕">🚕 Taxi</button>
+          <button class="transport-type-btn" data-type="Car Rental" data-emoji="🚗">🚗 Car</button>
+          <button class="transport-type-btn" data-type="Other" data-emoji="🚐">🚐 Other</button>
+        </div>
+        <div class="frow">
+          <div><label class="flbl">From</label><input class="finput" id="tr-from" placeholder="Station / stop"/></div>
+          <div><label class="flbl">To</label><input class="finput" id="tr-to" placeholder="Destination"/></div>
+        </div>
+        <div class="frow">
+          <div><label class="flbl">Date</label><input class="finput" type="date" id="tr-date"/></div>
+          <div><label class="flbl">Time</label><input class="finput" id="tr-time" placeholder="09:30"/></div>
+        </div>
+        <label class="flbl">Confirmation #</label>
+        <input class="finput" id="tr-conf" placeholder="ABC123"/>
+        <label class="flbl">Booking Link</label>
+        <input class="finput" id="tr-link" placeholder="https://..." type="url"/>
+        <label class="flbl">Notes</label>
+        <textarea class="finput" id="tr-notes" rows="3" placeholder="Gate, platform, luggage allowance..."></textarea>
+        <button class="btn-primary" id="btn-save-transport">💾 Save</button>
+        <button class="btn-primary" id="btn-delete-transport" style="margin-top:8px;background:#e85555;display:none">🗑️ Delete</button>
       </div>
     </div>
 
@@ -3273,7 +3363,7 @@ Return ONLY the JSON object, nothing else.`;
           if (tab === "places") renderPlaces(t);
           if (tab === "timeline") renderTimeline(t);
           if (tab === "hotels") renderHotels(t);
-          if (tab === "flights") renderFlights(t);
+          if (tab === "flights") { renderFlights(t); renderTransport(t); }
           if (tab === "packing") renderTripPack(t);
         }
       }
@@ -3317,6 +3407,174 @@ Return ONLY the JSON object, nothing else.`;
       });
 
       // ── FLIGHTS ──
+      // ── TRANSPORT ──
+      let editingTransport = null; // { trip, entry } or { trip, entry: null } for new
+
+      const TRANSPORT_TYPES = [
+        { type: "Bus", emoji: "🚌" },
+        { type: "Train", emoji: "🚆" },
+        { type: "Ferry", emoji: "⛴️" },
+        { type: "Taxi", emoji: "🚕" },
+        { type: "Car Rental", emoji: "🚗" },
+        { type: "Other", emoji: "🚐" },
+      ];
+
+      function getTransportEmoji(type) {
+        return TRANSPORT_TYPES.find(t => t.type === type)?.emoji || "🚐";
+      }
+
+      function renderTransport(trip) {
+        const el = $("transport-list");
+        el.innerHTML = "";
+        const list = trip.transport || [];
+        if (!list.length) {
+          el.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--muted);font-size:13px">No transport entries yet</div>';
+          return;
+        }
+        list.forEach((entry) => {
+          const card = mk("div", "booking-card");
+          card.style.marginBottom = "0";
+
+          const typeRow = mk("div", "transport-card-type");
+          typeRow.textContent = getTransportEmoji(entry.type) + " " + (entry.type || "Transport");
+
+          const routeRow = mk("div", "transport-route");
+          if (entry.from || entry.to) {
+            routeRow.textContent = (entry.from || "?") + " → " + (entry.to || "?");
+          }
+
+          card.append(typeRow, routeRow);
+
+          // Date + time row
+          const parts = [];
+          if (entry.date) parts.push(fmtFull(new Date(entry.date + "T12:00:00")));
+          if (entry.time) parts.push(entry.time);
+          if (parts.length) {
+            const det = mk("div", "flight-detail");
+            det.textContent = parts.join(" · ");
+            card.appendChild(det);
+          }
+
+          // Conf
+          if (entry.conf) {
+            const ce = mk("div", "flight-detail");
+            ce.innerHTML = 'Conf: <span class="conf-num">' + entry.conf + "</span>";
+            card.appendChild(ce);
+          }
+
+          // Link pill
+          if (entry.link) {
+            const lp = mk("a");
+            lp.href = entry.link;
+            lp.target = "_blank";
+            lp.rel = "noopener";
+            lp.style.cssText = "display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:11px;font-weight:600;background:#EEF2FF;color:#4F46E5;padding:3px 9px;border-radius:20px;text-decoration:none";
+            lp.textContent = "🔗 Booking";
+            card.appendChild(lp);
+          }
+
+          // Notes
+          if (entry.notes) {
+            const nt = mk("div", "transport-notes");
+            nt.textContent = entry.notes;
+            card.appendChild(nt);
+          }
+
+          const doDelete = () => slideRemove(wrap, () => {
+            const i = (trip.transport || []).indexOf(entry);
+            if (i > -1) trip.transport.splice(i, 1);
+            save();
+          });
+
+          // Edit button
+          const editBtn = mk("button");
+          editBtn.style.cssText = "position:absolute;top:12px;right:44px;padding:5px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;-webkit-tap-highlight-color:transparent";
+          editBtn.textContent = "✏️";
+          editBtn.addEventListener("click", (e) => { e.stopPropagation(); openEditTransport(trip, entry); });
+
+          card.appendChild(editBtn);
+          card.appendChild(makeDelBtn(doDelete));
+          card.style.cursor = "pointer";
+          card.addEventListener("click", () => openEditTransport(trip, entry));
+
+          const wrap = makeSwipeRow(card, doDelete);
+          el.appendChild(wrap);
+        });
+      }
+
+      function openEditTransport(trip, entry) {
+        const isNew = !entry;
+        editingTransport = { trip, entry: entry || null };
+        $("transport-modal-title").textContent = isNew ? "Add Transport 🚌" : "Edit Transport ✏️";
+        $("btn-delete-transport").style.display = isNew ? "none" : "block";
+
+        // Reset type picker
+        const activeType = entry?.type || "Bus";
+        document.querySelectorAll(".transport-type-btn").forEach(btn => {
+          btn.classList.toggle("active", btn.dataset.type === activeType);
+        });
+
+        $("tr-from").value = entry?.from || "";
+        $("tr-to").value = entry?.to || "";
+        $("tr-date").value = entry?.date || "";
+        $("tr-time").value = entry?.time || "";
+        $("tr-conf").value = entry?.conf || "";
+        $("tr-link").value = entry?.link || "";
+        $("tr-notes").value = entry?.notes || "";
+        openModal("modal-transport");
+      }
+
+      // Type picker toggle
+      document.querySelectorAll(".transport-type-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".transport-type-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+        });
+      });
+
+      $("btn-save-transport").addEventListener("click", () => {
+        const { trip, entry } = editingTransport || {};
+        if (!trip) return;
+        const activeBtn = document.querySelector(".transport-type-btn.active");
+        const data = {
+          type: activeBtn?.dataset.type || "Other",
+          from: $("tr-from").value.trim(),
+          to: $("tr-to").value.trim(),
+          date: $("tr-date").value,
+          time: $("tr-time").value.trim(),
+          conf: $("tr-conf").value.trim(),
+          link: $("tr-link").value.trim(),
+          notes: $("tr-notes").value.trim(),
+        };
+        if (!trip.transport) trip.transport = [];
+        if (entry) {
+          Object.assign(entry, data);
+        } else {
+          trip.transport.push(data);
+        }
+        save();
+        closeModals();
+        renderTransport(trip);
+        toast((entry ? "Transport updated" : "Transport added") + "! " + getTransportEmoji(data.type));
+      });
+
+      $("btn-delete-transport").addEventListener("click", () => {
+        const { trip, entry } = editingTransport || {};
+        if (!trip || !entry) return;
+        const i = (trip.transport || []).indexOf(entry);
+        if (i > -1) trip.transport.splice(i, 1);
+        save();
+        closeModals();
+        renderTransport(trip);
+        toast("Transport removed");
+      });
+
+      $("btn-add-transport-trip").addEventListener("click", () => {
+        const t = D.trips[curTrip];
+        if (!t) return;
+        openEditTransport(t, null);
+      });
+
       function renderFlights(trip) {
         const el = $("flights-list");
         el.innerHTML = "";
@@ -3352,6 +3610,14 @@ Return ONLY the JSON object, nothing else.`;
           const parts2 = [dateStr, f.num || "", timePart].filter(Boolean);
           const det = mk("div", "flight-detail");
           det.textContent = parts2.join(" · ");
+          // Show arrival date if different from departure date
+          if (f.arrDate && f.arrDate !== f.date) {
+            const arrDateStr = fmtFull(new Date(f.arrDate + "T12:00:00"));
+            const arrDet = mk("div", "flight-detail");
+            arrDet.innerHTML = 'Arrives: <span style="font-weight:600">' + arrDateStr + '</span>';
+            arrDet.style.color = "var(--muted)";
+            card.appendChild(arrDet);
+          }
           card.append(t1, route, det);
           if (f.conf) {
             const ce = mk("div", "flight-detail");
@@ -3404,6 +3670,7 @@ Return ONLY a JSON object with these fields:
   "num": "outbound flight number e.g. JL012",
   "dep": "outbound departure time in HH:MM 24h format",
   "arr": "outbound arrival time in HH:MM 24h format",
+  "arr_date": "arrival date in YYYY-MM-DD format — only if different from departure date, else empty string",
   "arr_tz": "arrival timezone offset or code e.g. +9, JST, -8, PST (leave empty if same as departure timezone)",
   "conf": "confirmation or booking reference code",
   "return_date": "return flight departure date in YYYY-MM-DD format (empty if no return)",
@@ -3434,6 +3701,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.num) $("fl-num").value = parsed.num;
           if (parsed.dep) $("fl-dep").value = parsed.dep;
           if (parsed.arr) $("fl-arr").value = parsed.arr;
+          if (parsed.arr_date) $("fl-arr-date").value = parsed.arr_date;
           if (parsed.arr_tz) $("fl-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("fl-conf").value = parsed.conf;
           // Show return toggle if return found
@@ -3472,6 +3740,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           num: $("fl-num").value.trim(),
           dep: $("fl-dep").value.trim(),
           arr: $("fl-arr").value.trim(),
+          arrDate: $("fl-arr-date").value || undefined,
           arrTz: $("fl-arr-tz").value.trim(),
           conf: $("fl-conf").value.trim(),
           emailText: emailText || undefined,
@@ -3495,7 +3764,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         save();
         closeModals();
         renderFlights(t);
-        ["fl-from","fl-to","fl-date","fl-num","fl-dep","fl-arr","fl-arr-tz","fl-conf",
+        ["fl-from","fl-to","fl-date","fl-num","fl-dep","fl-arr","fl-arr-date","fl-arr-tz","fl-conf",
          "fl-ret-date","fl-ret-num","fl-ret-dep","fl-ret-arr","fl-ret-arr-tz"].forEach(id => $(id).value = "");
         $("fl-has-return").checked = false;
         $("fl-return-fields").style.display = "none";
@@ -3712,6 +3981,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         $("ef-num").value = f.num || "";
         $("ef-dep").value = f.dep || "";
         $("ef-arr").value = f.arr || "";
+        $("ef-arr-date").value = f.arrDate || "";
         $("ef-arr-tz").value = f.arrTz || "";
         $("ef-conf").value = f.conf || "";
         $("ef-email").value = "";
@@ -3735,6 +4005,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         f.num = $("ef-num").value.trim();
         f.dep = $("ef-dep").value.trim();
         f.arr = $("ef-arr").value.trim();
+        f.arrDate = $("ef-arr-date").value || undefined;
         f.arrTz = $("ef-arr-tz").value.trim();
         f.conf = $("ef-conf").value.trim();
         save();
@@ -3762,7 +4033,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         btn.disabled = true;
         try {
           const prompt = `Extract the outbound flight booking details from this email and return ONLY a JSON object with these fields:
-{"from":"IATA departure code","to":"IATA destination code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM 24h","arr":"HH:MM 24h","arr_tz":"arrival timezone e.g. +9 or JST (empty if same as departure)","conf":"confirmation code"}
+{"from":"IATA departure code","to":"IATA destination code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM 24h","arr":"HH:MM 24h","arr_date":"arrival date YYYY-MM-DD only if different from departure date else empty","arr_tz":"arrival timezone e.g. +9 or JST (empty if same as departure)","conf":"confirmation code"}
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
           if (parsed.from) $("ef-from").value = parsed.from;
@@ -3771,6 +4042,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.num) $("ef-num").value = parsed.num;
           if (parsed.dep) $("ef-dep").value = parsed.dep;
           if (parsed.arr) $("ef-arr").value = parsed.arr;
+          if (parsed.arr_date) $("ef-arr-date").value = parsed.arr_date;
           if (parsed.arr_tz) $("ef-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("ef-conf").value = parsed.conf;
           // Store email text on flight object immediately
@@ -4731,8 +5003,54 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
               openCopyPackItem(trip, cat.cat, item);
             });
             pi.append(handle, check, label, copyb, delb);
+
+            // Inline edit: double-click or long-press label
+            function startInlineEdit() {
+              if (pi.querySelector(".pack-item-name-input")) return; // already editing
+              const input = mk("input", "pack-item-name-input");
+              input.value = label.textContent;
+              label.replaceWith(input);
+              input.focus();
+              input.select();
+              function commitEdit() {
+                const newVal = input.value.trim();
+                if (newVal && newVal !== item) {
+                  const catObj = (isGlobal ? D.globalPacking : trip.packing).find(c => c.cat === cat.cat);
+                  if (catObj) {
+                    const idx = catObj.items.indexOf(item);
+                    if (idx > -1) {
+                      catObj.items[idx] = newVal;
+                      item = newVal; // update closure
+                      // update checked key
+                      const oldKey = key;
+                      const newKey = (isGlobal ? "g:" : "t" + D.trips.indexOf(trip) + ":") + cat.cat + ":" + newVal;
+                      if (D.checked[oldKey]) { D.checked[newKey] = true; delete D.checked[oldKey]; }
+                      save();
+                    }
+                  }
+                }
+                label.textContent = item;
+                input.replaceWith(label);
+              }
+              input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") { e.preventDefault(); commitEdit(); }
+                if (e.key === "Escape") { input.replaceWith(label); }
+              });
+              input.addEventListener("blur", commitEdit);
+              input.addEventListener("click", e => e.stopPropagation());
+            }
+
+            let longPressTimer = null;
+            label.addEventListener("dblclick", (e) => { e.stopPropagation(); startInlineEdit(); });
+            label.addEventListener("touchstart", (e) => {
+              longPressTimer = setTimeout(() => { startInlineEdit(); }, 500);
+            }, { passive: true });
+            label.addEventListener("touchend", () => clearTimeout(longPressTimer));
+            label.addEventListener("touchmove", () => clearTimeout(longPressTimer));
+
             pi.addEventListener("click", (e) => {
-              if (e.target.closest(".drag-handle,.pack-del-btn,.pack-copy-btn")) return;
+              if (e.target.closest(".drag-handle,.pack-del-btn,.pack-copy-btn,.pack-item-name-input")) return;
+              if (pi.querySelector(".pack-item-name-input")) return; // editing mode
               D.checked[key] = !D.checked[key];
               if (!D.checked[key]) delete D.checked[key];
               save();
