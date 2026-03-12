@@ -1856,37 +1856,37 @@
         </div>
         <div id="flight-manual">
           <div class="frow">
-            <div>
-              <label class="flbl">From</label
-              ><input class="finput" id="fl-from" placeholder="YVR" />
-            </div>
-            <div>
-              <label class="flbl">To</label
-              ><input class="finput" id="fl-to" placeholder="NRT" />
-            </div>
+            <div><label class="flbl">From</label><input class="finput" id="fl-from" placeholder="YVR"/></div>
+            <div><label class="flbl">To</label><input class="finput" id="fl-to" placeholder="NRT"/></div>
           </div>
           <div class="frow">
-            <div>
-              <label class="flbl">Date</label
-              ><input class="finput" type="date" id="fl-date" />
-            </div>
-            <div>
-              <label class="flbl">Flight #</label
-              ><input class="finput" id="fl-num" placeholder="AC61" />
-            </div>
+            <div><label class="flbl">Date</label><input class="finput" type="date" id="fl-date"/></div>
+            <div><label class="flbl">Flight #</label><input class="finput" id="fl-num" placeholder="AC61"/></div>
           </div>
           <div class="frow">
-            <div>
-              <label class="flbl">Departs</label
-              ><input class="finput" id="fl-dep" placeholder="11:30" />
-            </div>
-            <div>
-              <label class="flbl">Arrives</label
-              ><input class="finput" id="fl-arr" placeholder="14:20+1" />
-            </div>
+            <div><label class="flbl">Departs</label><input class="finput" id="fl-dep" placeholder="11:30"/></div>
+            <div><label class="flbl">Arrives</label><input class="finput" id="fl-arr" placeholder="14:20"/></div>
           </div>
+          <label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9, -5, UTC)</span></label>
+          <input class="finput" id="fl-arr-tz" placeholder="e.g. +9 or JST" style="margin-bottom:12px"/>
           <label class="flbl">Confirmation #</label>
-          <input class="finput" id="fl-conf" placeholder="ABC123" />
+          <input class="finput" id="fl-conf" placeholder="ABC123" style="margin-bottom:12px"/>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;cursor:pointer;margin-bottom:8px">
+            <input type="checkbox" id="fl-has-return" style="width:16px;height:16px;cursor:pointer"/> Add return flight
+          </label>
+          <div id="fl-return-fields" style="display:none;background:var(--surface);border-radius:var(--rs);padding:12px;margin-bottom:8px">
+            <div style="font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0.5px;margin-bottom:10px">RETURN FLIGHT</div>
+            <div class="frow">
+              <div><label class="flbl">Date</label><input class="finput" type="date" id="fl-ret-date"/></div>
+              <div><label class="flbl">Flight #</label><input class="finput" id="fl-ret-num" placeholder="AC62"/></div>
+            </div>
+            <div class="frow">
+              <div><label class="flbl">Departs</label><input class="finput" id="fl-ret-dep" placeholder="18:00"/></div>
+              <div><label class="flbl">Arrives</label><input class="finput" id="fl-ret-arr" placeholder="10:30"/></div>
+            </div>
+            <label class="flbl">Arrival Timezone</label>
+            <input class="finput" id="fl-ret-arr-tz" placeholder="e.g. -8 or PST" style="margin-bottom:0"/>
+          </div>
         </div>
         <div id="flight-paste" style="display: none">
           <textarea
@@ -1996,11 +1996,21 @@
           <div><label class="flbl">Departure</label><input class="finput" id="ef-dep" placeholder="10:30"/></div>
           <div><label class="flbl">Arrival</label><input class="finput" id="ef-arr" placeholder="14:45"/></div>
         </div>
+        <label class="flbl">Arrival Timezone <span style="font-weight:400;color:var(--muted)">(e.g. +9, -5, UTC)</span></label>
+        <input class="finput" id="ef-arr-tz" placeholder="e.g. +9 or JST" style="margin-bottom:12px"/>
         <label class="flbl">Confirmation #</label>
-        <input class="finput" id="ef-conf" placeholder="ABC123"/>
-        <label class="flbl">Email (optional — re-parse)</label>
-        <textarea class="finput" id="ef-email" rows="4" placeholder="Paste updated confirmation email to re-parse..."></textarea>
-        <button class="btn-primary" id="btn-parse-editflight" style="background:var(--ink);margin-bottom:12px">🔍 Re-parse Email</button>
+        <input class="finput" id="ef-conf" placeholder="ABC123" style="margin-bottom:12px"/>
+        <div id="ef-original-email-wrap" style="display:none;margin-bottom:12px">
+          <label class="flbl">Original Email</label>
+          <div id="ef-original-email" style="background:var(--surface);border-radius:var(--rs);padding:10px;font-size:11px;color:var(--muted);white-space:pre-wrap;max-height:120px;overflow-y:auto;border:1px solid var(--border);font-family:monospace"></div>
+        </div>
+        <details style="margin-bottom:12px">
+          <summary style="font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;letter-spacing:0.5px;list-style:none">🔍 RE-PARSE EMAIL ▸</summary>
+          <div style="margin-top:8px">
+            <textarea class="finput" id="ef-email" rows="4" placeholder="Paste updated confirmation email to re-parse..."></textarea>
+            <button class="btn-primary" id="btn-parse-editflight" style="background:var(--ink);margin-bottom:0">🔍 Re-parse Email</button>
+          </div>
+        </details>
         <button class="btn-primary" id="btn-do-editflight">Save Changes</button>
         <button class="btn-primary" id="btn-delete-editflight" style="margin-top:8px;background:#e85555">🗑️ Delete Flight</button>
       </div>
@@ -2344,26 +2354,19 @@
           <button class="btn-primary" id="btn-pack-sheets-cancel1" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">Cancel</button>
         </div>
 
-        <!-- Step 2: Category -->
+        <!-- Step 2: Paste & Parse -->
         <div id="pack-sheets-step2" style="display:none">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="pack-sheets-person-label"></div>
-          <div id="pack-sheets-cat-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px"></div>
+          <div style="font-size:13px;font-weight:500;margin-bottom:10px" id="pack-sheets-person-label"></div>
+          <label class="flbl">Paste rows from Google Sheets</label>
+          <textarea id="pack-sheets-area" rows="7" class="finput" placeholder="One item per row — paste from Sheets here" style="font-size:12px;font-family:monospace;resize:vertical"></textarea>
+          <button class="btn-primary" id="btn-parse-pack-sheets" style="background:var(--ink);margin-bottom:8px">🔍 Parse &amp; Categorize</button>
           <button class="btn-primary" id="btn-pack-sheets-back1" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">← Back</button>
         </div>
 
-        <!-- Step 3: Paste & Parse -->
+        <!-- Step 3: Drag-to-sort review -->
         <div id="pack-sheets-step3" style="display:none">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="pack-sheets-dest-label"></div>
-          <label class="flbl">Paste rows from Google Sheets</label>
-          <textarea id="pack-sheets-area" rows="7" class="finput" placeholder="One item per row — paste from Sheets here" style="font-size:12px;font-family:monospace;resize:vertical"></textarea>
-          <button class="btn-primary" id="btn-parse-pack-sheets" style="background:var(--ink);margin-bottom:8px">🔍 Parse</button>
-          <button class="btn-primary" id="btn-pack-sheets-back2" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">← Back</button>
-        </div>
-
-        <!-- Step 4: Preview -->
-        <div id="pack-sheets-step-preview" style="display:none">
-          <div style="font-size:13px;color:var(--muted);margin-bottom:12px" id="pack-sheets-count"></div>
-          <div id="pack-sheets-preview-list" style="display:flex;flex-direction:column;gap:6px;max-height:40vh;overflow-y:auto;margin-bottom:16px"></div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:10px" id="pack-sheets-count">Gemini sorted these — drag to move between categories:</div>
+          <div id="pack-sheets-preview-list" style="max-height:55vh;overflow-y:auto;margin-bottom:12px"></div>
           <button class="btn-primary" id="btn-pack-sheets-confirm" style="margin-bottom:8px">✅ Add to Packing List</button>
           <button class="btn-primary" id="btn-pack-sheets-back" style="background:transparent;color:var(--muted);border:1.5px solid var(--border)">← Back</button>
         </div>
@@ -2802,15 +2805,14 @@
       let packSheetsSelectedCat = null;
 
       function packSheetsShowStep(step) {
-        ["pack-sheets-step1","pack-sheets-step2","pack-sheets-step3","pack-sheets-step-preview"].forEach(id => {
+        ["pack-sheets-step1","pack-sheets-step2","pack-sheets-step3"].forEach(id => {
           $(id).style.display = "none";
         });
-        const labels = ["","STEP 1 OF 3 — SELECT PERSON","STEP 2 OF 3 — SELECT CATEGORY","STEP 3 OF 3 — PASTE LIST","REVIEW ITEMS"];
+        const labels = ["","STEP 1 OF 3 — SELECT PERSON","STEP 2 OF 3 — PASTE LIST","STEP 3 OF 3 — REVIEW & SORT"];
         $("pack-sheets-step-label").textContent = labels[step] || "";
         if (step === 1) $("pack-sheets-step1").style.display = "block";
         else if (step === 2) $("pack-sheets-step2").style.display = "block";
         else if (step === 3) $("pack-sheets-step3").style.display = "block";
-        else if (step === 4) $("pack-sheets-step-preview").style.display = "block";
       }
 
       function packSheetsRenderStep1(trip) {
@@ -2824,7 +2826,8 @@
         baseBtn.textContent = "📦 General (no person)";
         baseBtn.addEventListener("click", () => {
           packSheetsSelectedPerson = null;
-          packSheetsRenderStep2(trip);
+          $("pack-sheets-person-label").textContent = "📦 General (no person)";
+          $("pack-sheets-area").value = "";
           packSheetsShowStep(2);
         });
         list.appendChild(baseBtn);
@@ -2836,7 +2839,8 @@
           btn.textContent = getCatEmoji(name) + " " + name;
           btn.addEventListener("click", () => {
             packSheetsSelectedPerson = name;
-            packSheetsRenderStep2(trip);
+            $("pack-sheets-person-label").textContent = getCatEmoji(name) + " " + name;
+            $("pack-sheets-area").value = "";
             packSheetsShowStep(2);
           });
           list.appendChild(btn);
@@ -2895,63 +2899,203 @@
       });
       $("pack-sheets-new-person").addEventListener("keydown", e => { if (e.key === "Enter") $("btn-pack-sheets-add-person").click(); });
 
+      // packSheetsGrouped: { catName: [items] } — maintained during drag-sort
+      let packSheetsGrouped = {};
+
+      function packSheetsRenderReview() {
+        const list = $("pack-sheets-preview-list");
+        list.innerHTML = "";
+        const cats = Object.keys(packSheetsGrouped);
+        if (!cats.length) return;
+
+        cats.forEach(cat => {
+          const items = packSheetsGrouped[cat];
+          // Section header
+          const hdr = mk("div");
+          hdr.style.cssText = "display:flex;align-items:center;gap:6px;padding:8px 0 4px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase";
+          hdr.textContent = getCatEmoji(cat) + " " + subCatLabel(cat);
+          list.appendChild(hdr);
+
+          // Drop zone
+          const dz = mk("div", "pack-review-dz");
+          dz.dataset.cat = cat;
+          dz.style.cssText = "min-height:36px;border-radius:var(--rs);border:2px dashed transparent;transition:border-color 0.15s,background 0.15s;margin-bottom:8px";
+
+          items.forEach(item => {
+            const row = mk("div");
+            row.style.cssText = "display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:var(--rs);padding:8px 12px;font-size:13px;margin-bottom:4px;cursor:grab;user-select:none";
+            row.dataset.item = item;
+            row.dataset.cat = cat;
+            const grip = mk("span");
+            grip.innerHTML = '<svg width="10" height="14" viewBox="0 0 10 14"><circle cx="3" cy="2.5" r="1.3" fill="#ccc"/><circle cx="7" cy="2.5" r="1.3" fill="#ccc"/><circle cx="3" cy="7" r="1.3" fill="#ccc"/><circle cx="7" cy="7" r="1.3" fill="#ccc"/><circle cx="3" cy="11.5" r="1.3" fill="#ccc"/><circle cx="7" cy="11.5" r="1.3" fill="#ccc"/></svg>';
+            const lbl = mk("span");
+            lbl.style.flex = "1";
+            lbl.textContent = item;
+            const rm = mk("button");
+            rm.textContent = "✕";
+            rm.style.cssText = "background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 6px";
+            rm.addEventListener("click", e => {
+              e.stopPropagation();
+              packSheetsGrouped[cat] = packSheetsGrouped[cat].filter(i => i !== item);
+              packSheetsRenderReview();
+            });
+            row.append(grip, lbl, rm);
+
+            // Drag to re-categorize
+            let rDragging = false, rGhost = null;
+            function rStartD(cx, cy) {
+              rDragging = true;
+              row.style.opacity = "0.4";
+              rGhost = row.cloneNode(true);
+              rGhost.style.cssText = "position:fixed;z-index:9999;pointer-events:none;width:" + row.offsetWidth + "px;opacity:.9;box-shadow:0 8px 24px rgba(0,0,0,.18);border-radius:var(--rs);transform:rotate(1deg);transition:none;background:var(--surface)";
+              rGhost.style.left = cx - row.offsetWidth/2 + "px";
+              rGhost.style.top = cy - row.offsetHeight/2 + "px";
+              document.body.appendChild(rGhost);
+              document.querySelectorAll(".pack-review-dz").forEach(z => {
+                z.style.borderColor = "var(--border)";
+                z.style.background = "rgba(0,0,0,0.02)";
+              });
+            }
+            function rMoveD(cx, cy) {
+              if (!rDragging || !rGhost) return;
+              rGhost.style.left = cx - rGhost.offsetWidth/2 + "px";
+              rGhost.style.top = cy - rGhost.offsetHeight/2 + "px";
+              document.querySelectorAll(".pack-review-dz").forEach(z => {
+                const r = z.getBoundingClientRect();
+                const over = cx>=r.left && cx<=r.right && cy>=r.top && cy<=r.bottom;
+                z.style.borderColor = over ? "var(--sky)" : "var(--border)";
+                z.style.background = over ? "rgba(78,205,196,0.08)" : "rgba(0,0,0,0.02)";
+              });
+              // Auto-scroll the preview list
+              const scrollEl = $("pack-sheets-preview-list");
+              const sr = scrollEl.getBoundingClientRect();
+              const edge = 60;
+              if (cy < sr.top + edge) scrollEl.scrollTop -= 8;
+              else if (cy > sr.bottom - edge) scrollEl.scrollTop += 8;
+            }
+            function rEndD(cx, cy) {
+              if (!rDragging) return;
+              rDragging = false;
+              row.style.opacity = "";
+              if (rGhost) { rGhost.remove(); rGhost = null; }
+              document.querySelectorAll(".pack-review-dz").forEach(z => {
+                z.style.borderColor = "transparent";
+                z.style.background = "";
+              });
+              const tgt = document.elementFromPoint(cx, cy)?.closest(".pack-review-dz");
+              const toCat = tgt?.dataset.cat;
+              if (toCat && toCat !== cat) {
+                packSheetsGrouped[cat] = packSheetsGrouped[cat].filter(i => i !== item);
+                if (!packSheetsGrouped[toCat]) packSheetsGrouped[toCat] = [];
+                if (!packSheetsGrouped[toCat].includes(item)) packSheetsGrouped[toCat].push(item);
+                packSheetsRenderReview();
+              }
+            }
+            row.addEventListener("mousedown", e => {
+              e.preventDefault();
+              rStartD(e.clientX, e.clientY);
+              const mm = ev => rMoveD(ev.clientX, ev.clientY);
+              const mu = ev => { rEndD(ev.clientX, ev.clientY); document.removeEventListener("mousemove", mm); document.removeEventListener("mouseup", mu); };
+              document.addEventListener("mousemove", mm);
+              document.addEventListener("mouseup", mu);
+            });
+            row.addEventListener("touchstart", e => { const t=e.touches[0]; rStartD(t.clientX,t.clientY); }, {passive:true});
+            row.addEventListener("touchmove", e => { const t=e.touches[0]; rMoveD(t.clientX,t.clientY); e.preventDefault(); }, {passive:false});
+            row.addEventListener("touchend", e => { const t=e.changedTouches[0]; rEndD(t.clientX,t.clientY); });
+            dz.appendChild(row);
+          });
+
+          // Empty state for drop zone
+          if (!items.length) {
+            const emp = mk("div");
+            emp.style.cssText = "text-align:center;padding:10px;font-size:12px;color:var(--border)";
+            emp.textContent = "Drop items here";
+            dz.appendChild(emp);
+          }
+          list.appendChild(dz);
+        });
+
+        const total = Object.values(packSheetsGrouped).reduce((s,a) => s+a.length, 0);
+        $("pack-sheets-count").textContent = total + " items — drag to re-sort, ✕ to remove:";
+      }
+
       $("btn-parse-pack-sheets").addEventListener("click", async () => {
         const text = $("pack-sheets-area").value.trim();
         if (!text) { toast("Paste your list first"); return; }
-        const cat = packSheetsSelectedCat;
-        if (!cat) { toast("No category selected"); return; }
         const btn = $("btn-parse-pack-sheets");
         btn.textContent = "⏳ Parsing...";
         btn.disabled = true;
         try {
-          const prompt = `Extract packing list items from this text (pasted from Google Sheets, one item per row).
-Return ONLY a JSON array of strings, each being a packing item name. Clean up formatting.
-Ignore empty rows, column headers, and non-item rows.
-Example output: ["Passport", "Phone charger", "Sunscreen"]
-Return ONLY the JSON array, nothing else.`;
-          const result = await geminiParse(prompt, text);
-          packSheetsParsed = Array.isArray(result) ? result.filter(i => typeof i === "string" && i.trim()) : [];
-          if (!packSheetsParsed.length) { toast("Nothing found — check your data"); return; }
+          // Determine available categories for this person
+          let availCats;
+          if (packSheetsSelectedPerson) {
+            availCats = getPersonSubCats(packSheetsTrip, packSheetsSelectedPerson).map(c => subCatLabel(c.cat));
+          } else {
+            availCats = packSheetsTrip.packing.filter(c => !c.cat.includes("::")).map(c => c.cat);
+          }
+          const catList = availCats.join(", ");
 
-          const list = $("pack-sheets-preview-list");
-          list.innerHTML = "";
-          packSheetsParsed.forEach((item, idx) => {
-            const row = mk("div");
-            row.style.cssText = "display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:var(--rs);padding:8px 12px;font-size:13px";
-            row.innerHTML = `<span style="flex:1">${item}</span>`;
-            const rm = mk("button");
-            rm.textContent = "✕";
-            rm.style.cssText = "background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:2px 6px";
-            rm.addEventListener("click", () => { packSheetsParsed.splice(idx, 1); $("btn-parse-pack-sheets").click(); });
-            row.appendChild(rm);
-            list.appendChild(row);
-          });
-          $("pack-sheets-count").textContent = packSheetsParsed.length + " items found";
-          $("btn-pack-sheets-confirm").dataset.cat = cat;
-          packSheetsShowStep(4);
+          const prompt = `You are a smart packing list organizer. Parse the items from this pasted text and categorize each one.
+
+Available categories: ${catList}
+
+Return ONLY a JSON object where keys are category names (exactly as listed above) and values are arrays of item name strings.
+Rules:
+- Extract clean item names (remove quantities, checkmarks, bullet points)
+- Assign each item to the most appropriate category
+- Use "Miscellaneous" for anything that doesn't fit
+- Ignore blank lines and headers
+- Do NOT include categories with zero items
+
+Example: {"Clothing": ["T-shirts", "Jeans"], "Electronics": ["Charger", "Headphones"]}
+Return ONLY the JSON object, nothing else.`;
+
+          const result = await geminiParse(prompt, text);
+          packSheetsGrouped = {};
+          if (result && typeof result === "object" && !Array.isArray(result)) {
+            // Map back to full cat keys (PersonName::SubCat for people)
+            Object.entries(result).forEach(([label, items]) => {
+              if (!Array.isArray(items) || !items.length) return;
+              let fullCat;
+              if (packSheetsSelectedPerson) {
+                // Find matching subcat
+                const subCatObj = getPersonSubCats(packSheetsTrip, packSheetsSelectedPerson)
+                  .find(c => subCatLabel(c.cat).toLowerCase() === label.toLowerCase());
+                fullCat = subCatObj ? subCatObj.cat : (packSheetsSelectedPerson + "::" + label);
+              } else {
+                fullCat = packSheetsTrip.packing.find(c => c.cat.toLowerCase() === label.toLowerCase())?.cat || label;
+              }
+              packSheetsGrouped[fullCat] = items.filter(i => typeof i === "string" && i.trim()).map(i => i.trim());
+            });
+          }
+          if (!Object.keys(packSheetsGrouped).length) { toast("Nothing found — check your data"); return; }
+          packSheetsRenderReview();
+          packSheetsShowStep(3);
         } catch(e) {
           toast("Parse failed: " + e.message);
         } finally {
-          btn.textContent = "🔍 Parse";
+          btn.textContent = "🔍 Parse & Categorize";
           btn.disabled = false;
         }
       });
 
       $("btn-pack-sheets-confirm").addEventListener("click", () => {
-        if (!packSheetsTrip || !packSheetsParsed.length) return;
-        const cat = $("btn-pack-sheets-confirm").dataset.cat;
-        let catObj = packSheetsTrip.packing.find(c => c.cat === cat);
-        if (!catObj) { catObj = { cat, items: [] }; packSheetsTrip.packing.push(catObj); }
-        packSheetsParsed.forEach(item => { if (!catObj.items.includes(item)) catObj.items.push(item); });
+        if (!packSheetsTrip || !Object.keys(packSheetsGrouped).length) return;
+        let totalAdded = 0;
+        Object.entries(packSheetsGrouped).forEach(([cat, items]) => {
+          if (!items.length) return;
+          let catObj = packSheetsTrip.packing.find(c => c.cat === cat);
+          if (!catObj) { catObj = { cat, items: [] }; packSheetsTrip.packing.push(catObj); }
+          items.forEach(item => { if (!catObj.items.includes(item)) { catObj.items.push(item); totalAdded++; } });
+        });
         save();
         closeModals();
-        renderPackItems($("trip-pack-list"), packSheetsTrip, false);
-        toast(packSheetsParsed.length + " items added! 🧳");
-        packSheetsParsed = [];
+        renderTripPack(packSheetsTrip);
+        toast(totalAdded + " items added! 🧳");
+        packSheetsGrouped = {};
       });
-      $("btn-pack-sheets-back").addEventListener("click", () => packSheetsShowStep(3));
+      $("btn-pack-sheets-back").addEventListener("click", () => packSheetsShowStep(2));
       $("btn-pack-sheets-back1").addEventListener("click", () => packSheetsShowStep(1));
-      $("btn-pack-sheets-back2").addEventListener("click", () => packSheetsShowStep(2));
       $("btn-pack-sheets-cancel1").addEventListener("click", closeModals);
 
       if($("btn-open-pack-templates")) $("btn-open-pack-templates").addEventListener("click", () => {
@@ -3183,11 +3327,7 @@ Return ONLY the JSON array, nothing else.`;
         }
         trip.flights.forEach((f) => {
           const dateStr = f.date ? fmtFull(new Date(f.date + "T12:00:00")) : "";
-          const parts = [
-            dateStr,
-            f.num || "",
-            f.dep && f.arr ? f.dep + " → " + f.arr : "",
-          ].filter(Boolean);
+
           const card = document.createElement("div");
           card.className = "booking-card";
           const t1 = mk("div", "booking-type");
@@ -3200,8 +3340,18 @@ Return ONLY the JSON array, nothing else.`;
           const fb = mk("div", "flight-ap");
           fb.textContent = f.to || "?";
           route.append(fa, ar, fb);
+          // Show Return badge if this is a return leg (to = trip origin)
+          if (f._isReturn) {
+            const rb = mk("span");
+            rb.textContent = "↩ RETURN";
+            rb.style.cssText = "font-size:10px;font-weight:600;letter-spacing:0.5px;background:#F0F4FF;color:#3B82F6;padding:2px 7px;border-radius:20px;margin-left:6px;vertical-align:middle";
+            t1.appendChild(rb);
+          }
+          const arrDisplay = f.arr + (f.arrTz ? " (" + f.arrTz + ")" : "");
+          const timePart = f.dep && f.arr ? f.dep + " → " + arrDisplay : "";
+          const parts2 = [dateStr, f.num || "", timePart].filter(Boolean);
           const det = mk("div", "flight-detail");
-          det.textContent = parts.join(" · ");
+          det.textContent = parts2.join(" · ");
           card.append(t1, route, det);
           if (f.conf) {
             const ce = mk("div", "flight-detail");
@@ -3245,25 +3395,38 @@ Return ONLY the JSON array, nothing else.`;
         btn.textContent = "⏳ Parsing...";
         btn.disabled = true;
         try {
-          const prompt = `Extract flight booking details from this email and return ONLY a JSON object with these fields:
+          const prompt = `Extract flight booking details from this email. The email may contain one outbound flight and optionally a return flight.
+Return ONLY a JSON object with these fields:
 {
-  "from": "IATA airport code (3 letters, e.g. YVR)",
-  "to": "IATA airport code (3 letters, e.g. NRT)",
-  "date": "departure date in YYYY-MM-DD format",
-  "num": "flight number e.g. JL012",
-  "dep": "departure time in HH:MM 24h format",
-  "arr": "arrival time in HH:MM 24h format",
-  "conf": "confirmation or booking reference code"
+  "from": "IATA airport code of departure (e.g. YVR)",
+  "to": "IATA airport code of destination (e.g. NRT)",
+  "date": "outbound departure date in YYYY-MM-DD format",
+  "num": "outbound flight number e.g. JL012",
+  "dep": "outbound departure time in HH:MM 24h format",
+  "arr": "outbound arrival time in HH:MM 24h format",
+  "arr_tz": "arrival timezone offset or code e.g. +9, JST, -8, PST (leave empty if same as departure timezone)",
+  "conf": "confirmation or booking reference code",
+  "return_date": "return flight departure date in YYYY-MM-DD format (empty if no return)",
+  "return_num": "return flight number (empty if no return)",
+  "return_dep": "return departure time HH:MM 24h (empty if no return)",
+  "return_arr": "return arrival time HH:MM 24h (empty if no return)",
+  "return_arr_tz": "return arrival timezone offset or code (empty if no return or same timezone)"
 }
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
           const prev = $("flight-preview");
           prev.style.display = "block";
-          prev._parsed = parsed;
-          prev.innerHTML = "<b>" + (parsed.from||"?") + " → " + (parsed.to||"?") + "</b><br>" +
+          prev._parsed = { ...parsed, _emailText: text };
+          let previewHtml = "<b>" + (parsed.from||"?") + " → " + (parsed.to||"?") + "</b><br>" +
             "Date: " + (parsed.date||"?") + " · Flight: " + (parsed.num||"?") + "<br>" +
-            "Dep: " + (parsed.dep||"?") + " · Arr: " + (parsed.arr||"?") + "<br>" +
+            "Dep: " + (parsed.dep||"?") + " · Arr: " + (parsed.arr||"?") + (parsed.arr_tz ? " (" + parsed.arr_tz + ")" : "") + "<br>" +
             "Conf: " + (parsed.conf||"?");
+          if (parsed.return_date) {
+            previewHtml += "<br><br><b style='color:var(--muted)'>↩ Return: " + (parsed.to||"?") + " → " + (parsed.from||"?") + "</b><br>" +
+              "Date: " + parsed.return_date + " · Flight: " + (parsed.return_num||"?") + "<br>" +
+              "Dep: " + (parsed.return_dep||"?") + " · Arr: " + (parsed.return_arr||"?") + (parsed.return_arr_tz ? " (" + parsed.return_arr_tz + ")" : "");
+          }
+          prev.innerHTML = previewHtml;
           // Populate manual fields
           if (parsed.from) $("fl-from").value = parsed.from;
           if (parsed.to) $("fl-to").value = parsed.to;
@@ -3271,7 +3434,18 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.num) $("fl-num").value = parsed.num;
           if (parsed.dep) $("fl-dep").value = parsed.dep;
           if (parsed.arr) $("fl-arr").value = parsed.arr;
+          if (parsed.arr_tz) $("fl-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("fl-conf").value = parsed.conf;
+          // Show return toggle if return found
+          if (parsed.return_date) {
+            $("fl-has-return").checked = true;
+            $("fl-return-fields").style.display = "block";
+            $("fl-ret-date").value = parsed.return_date;
+            $("fl-ret-num").value = parsed.return_num || "";
+            $("fl-ret-dep").value = parsed.return_dep || "";
+            $("fl-ret-arr").value = parsed.return_arr || "";
+            $("fl-ret-arr-tz").value = parsed.return_arr_tz || "";
+          }
           toast("✅ Flight parsed!");
         } catch(e) {
           toast("Parse failed: " + e.message);
@@ -3280,44 +3454,52 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           btn.disabled = false;
         }
       });
+      $("fl-has-return").addEventListener("change", () => {
+        $("fl-return-fields").style.display = $("fl-has-return").checked ? "block" : "none";
+      });
+
       $("btn-add-flight").addEventListener("click", () => {
         const t = D.trips[curTrip];
         if (!t) return;
-        const prev = $("flight-preview");
-        let f;
-        if (prev.style.display !== "none" && prev._parsed) {
-          f = prev._parsed;
-        } else {
-          const from = $("fl-from").value.trim().toUpperCase(),
-            to = $("fl-to").value.trim().toUpperCase();
-          if (!from || !to) {
-            toast("Add departure and arrival airports");
-            return;
-          }
-          f = {
-            from,
-            to,
-            date: $("fl-date").value,
-            num: $("fl-num").value.trim(),
-            dep: $("fl-dep").value.trim(),
-            arr: $("fl-arr").value.trim(),
-            conf: $("fl-conf").value.trim(),
-          };
-        }
+        const from = $("fl-from").value.trim().toUpperCase();
+        const to = $("fl-to").value.trim().toUpperCase();
+        if (!from || !to) { toast("Add departure and arrival airports"); return; }
+        const emailText = $("fl-email").value.trim();
+        const f = {
+          from,
+          to,
+          date: $("fl-date").value,
+          num: $("fl-num").value.trim(),
+          dep: $("fl-dep").value.trim(),
+          arr: $("fl-arr").value.trim(),
+          arrTz: $("fl-arr-tz").value.trim(),
+          conf: $("fl-conf").value.trim(),
+          emailText: emailText || undefined,
+        };
         t.flights.push(f);
+        // Add return flight if toggled
+        if ($("fl-has-return").checked && $("fl-ret-date").value) {
+          const ret = {
+            from: to,
+            to: from,
+            date: $("fl-ret-date").value,
+            num: $("fl-ret-num").value.trim(),
+            dep: $("fl-ret-dep").value.trim(),
+            arr: $("fl-ret-arr").value.trim(),
+            arrTz: $("fl-ret-arr-tz").value.trim(),
+            conf: f.conf,
+            emailText: emailText || undefined,
+          };
+          t.flights.push(ret);
+        }
         save();
         closeModals();
         renderFlights(t);
-        [
-          "fl-from",
-          "fl-to",
-          "fl-date",
-          "fl-num",
-          "fl-dep",
-          "fl-arr",
-          "fl-conf",
-        ].forEach((id) => ($(id).value = ""));
-        prev.style.display = "none";
+        ["fl-from","fl-to","fl-date","fl-num","fl-dep","fl-arr","fl-arr-tz","fl-conf",
+         "fl-ret-date","fl-ret-num","fl-ret-dep","fl-ret-arr","fl-ret-arr-tz"].forEach(id => $(id).value = "");
+        $("fl-has-return").checked = false;
+        $("fl-return-fields").style.display = "none";
+        $("flight-preview").style.display = "none";
         toast("Flight added! ✈️");
       });
       $("btn-add-flight-trip").addEventListener("click", () =>
@@ -3530,8 +3712,18 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         $("ef-num").value = f.num || "";
         $("ef-dep").value = f.dep || "";
         $("ef-arr").value = f.arr || "";
+        $("ef-arr-tz").value = f.arrTz || "";
         $("ef-conf").value = f.conf || "";
         $("ef-email").value = "";
+        // Show original email if stored
+        const emailWrap = $("ef-original-email-wrap");
+        const emailEl = $("ef-original-email");
+        if (f.emailText) {
+          emailEl.textContent = f.emailText;
+          emailWrap.style.display = "block";
+        } else {
+          emailWrap.style.display = "none";
+        }
         openModal("modal-edit-flight");
       }
       $("btn-do-editflight").addEventListener("click", () => {
@@ -3543,6 +3735,7 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         f.num = $("ef-num").value.trim();
         f.dep = $("ef-dep").value.trim();
         f.arr = $("ef-arr").value.trim();
+        f.arrTz = $("ef-arr-tz").value.trim();
         f.conf = $("ef-conf").value.trim();
         save();
         closeModals();
@@ -3568,8 +3761,8 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
         btn.textContent = "⏳ Parsing...";
         btn.disabled = true;
         try {
-          const prompt = `Extract flight booking details from this email and return ONLY a JSON object with these fields:
-{"from":"IATA code","to":"IATA code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM","arr":"HH:MM","conf":"confirmation code"}
+          const prompt = `Extract the outbound flight booking details from this email and return ONLY a JSON object with these fields:
+{"from":"IATA departure code","to":"IATA destination code","date":"YYYY-MM-DD","num":"flight number","dep":"HH:MM 24h","arr":"HH:MM 24h","arr_tz":"arrival timezone e.g. +9 or JST (empty if same as departure)","conf":"confirmation code"}
 If a field cannot be found, use empty string. Return ONLY the JSON, no other text.`;
           const parsed = await geminiParse(prompt, text);
           if (parsed.from) $("ef-from").value = parsed.from;
@@ -3578,7 +3771,10 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
           if (parsed.num) $("ef-num").value = parsed.num;
           if (parsed.dep) $("ef-dep").value = parsed.dep;
           if (parsed.arr) $("ef-arr").value = parsed.arr;
+          if (parsed.arr_tz) $("ef-arr-tz").value = parsed.arr_tz;
           if (parsed.conf) $("ef-conf").value = parsed.conf;
+          // Store email text on flight object immediately
+          if (editingFlight) { editingFlight.f.emailText = text; $("ef-original-email").textContent = text; $("ef-original-email-wrap").style.display = "block"; }
           toast("✅ Parsed! Review and save.");
         } catch(e) {
           toast("Parse failed: " + e.message);
@@ -4582,6 +4778,10 @@ If a field cannot be found, use empty string. Return ONLY the JSON, no other tex
                     cy <= r.bottom,
                 );
               });
+              // Auto-scroll page when dragging near edges
+              const edge = 80;
+              if (cy < edge) window.scrollBy(0, -10);
+              else if (cy > window.innerHeight - edge) window.scrollBy(0, 10);
             }
             function endD(cx, cy) {
               if (!isDragging) return;
